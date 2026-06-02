@@ -36,7 +36,12 @@ import mascotSpeaking from "./assets/mascot/mascot-cat-speaking.png";
 
 const translations = {
   en: {
-    nav: ["Learning Worlds", "Learning Steps", "Parent Dashboard", "Plans & Pricing"],
+    nav: [
+      "Learning Worlds",
+      "Learning Steps",
+      "Parent Dashboard",
+      "Plans & Pricing",
+    ],
     login: "Sign In",
     getStarted: "Get Started",
     openMenu: "Open menu",
@@ -192,6 +197,7 @@ const translations = {
       freeCta: "Get Started Free",
       popular: "Most popular",
       premiumCopy: "The full adventure for curious learners.",
+      premiumPrice: "$5.49",
       month: "/ month",
       premiumItems: [
         "Every learning island",
@@ -396,6 +402,7 @@ const translations = {
       freeCta: "Bắt đầu miễn phí",
       popular: "Được chọn nhiều",
       premiumCopy: "Trọn bộ phiêu lưu cho trẻ ham học hỏi.",
+      premiumPrice: "129k",
       month: "/ tháng",
       premiumItems: [
         "Mọi hòn đảo học tập",
@@ -484,7 +491,8 @@ const authTranslations = {
     noAccount: "B\u1ea1n m\u1edbi d\u00f9ng SmartSteps?",
     signup: "\u0110\u0103ng k\u00fd",
     signupTitle: "T\u1ea1o t\u00e0i kho\u1ea3n",
-    signupCopy: "B\u1eaft \u0111\u1ea7u h\u00e0nh tr\u00ecnh h\u1ecdc an to\u00e0n v\u00e0 vui nh\u1ed9n cho b\u00e9.",
+    signupCopy:
+      "B\u1eaft \u0111\u1ea7u h\u00e0nh tr\u00ecnh h\u1ecdc an to\u00e0n v\u00e0 vui nh\u1ed9n cho b\u00e9.",
     parentName: "T\u00ean ph\u1ee5 huynh",
     parentNamePlaceholder: "Nh\u1eadp t\u00ean c\u1ee7a b\u1ea1n",
     confirmPassword: "X\u00e1c nh\u1eadn m\u1eadt kh\u1ea9u",
@@ -745,10 +753,22 @@ function LanguageSwitcher({ language, setLanguage }) {
 function GoogleBrandIcon() {
   return (
     <svg aria-hidden="true" className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
-      <path fill="#4285F4" d="M21.35 12.22c0-.68-.06-1.2-.19-1.75H12v3.34h5.38a4.66 4.66 0 0 1-2 3.02l-.02.11 2.9 2.25.2.02c1.85-1.71 2.9-4.22 2.9-7Z" />
-      <path fill="#34A853" d="M12 21.75c2.65 0 4.87-.87 6.49-2.54l-3.1-2.38c-.84.57-1.93.97-3.39.97a5.89 5.89 0 0 1-5.57-4.07l-.1.01-3.02 2.34-.04.1A9.8 9.8 0 0 0 12 21.75Z" />
-      <path fill="#FBBC05" d="M6.43 13.73A5.98 5.98 0 0 1 6.1 11.8c0-.67.12-1.32.32-1.93v-.13L3.35 7.37l-.1.04A9.85 9.85 0 0 0 2.2 11.8c0 1.58.38 3.07 1.06 4.38l3.17-2.45Z" />
-      <path fill="#EA4335" d="M12 5.8c1.84 0 3.08.8 3.79 1.45l2.76-2.7C16.86 2.97 14.65 2 12 2a9.8 9.8 0 0 0-8.74 5.41l3.17 2.46A5.9 5.9 0 0 1 12 5.8Z" />
+      <path
+        fill="#4285F4"
+        d="M21.35 12.22c0-.68-.06-1.2-.19-1.75H12v3.34h5.38a4.66 4.66 0 0 1-2 3.02l-.02.11 2.9 2.25.2.02c1.85-1.71 2.9-4.22 2.9-7Z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 21.75c2.65 0 4.87-.87 6.49-2.54l-3.1-2.38c-.84.57-1.93.97-3.39.97a5.89 5.89 0 0 1-5.57-4.07l-.1.01-3.02 2.34-.04.1A9.8 9.8 0 0 0 12 21.75Z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M6.43 13.73A5.98 5.98 0 0 1 6.1 11.8c0-.67.12-1.32.32-1.93v-.13L3.35 7.37l-.1.04A9.85 9.85 0 0 0 2.2 11.8c0 1.58.38 3.07 1.06 4.38l3.17-2.45Z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.8c1.84 0 3.08.8 3.79 1.45l2.76-2.7C16.86 2.97 14.65 2 12 2a9.8 9.8 0 0 0-8.74 5.41l3.17 2.46A5.9 5.9 0 0 1 12 5.8Z"
+      />
     </svg>
   );
 }
@@ -756,8 +776,15 @@ function GoogleBrandIcon() {
 function FacebookBrandIcon() {
   return (
     <span className="flex h-5 w-5 shrink-0 items-end justify-center overflow-hidden rounded-full bg-[#1877F2]">
-      <svg aria-hidden="true" className="h-[18px] w-[18px] translate-y-[2px]" viewBox="0 0 24 24">
-        <path fill="#fff" d="M14.5 22v-8h2.7l.4-3.1h-3.1v-2c0-.9.3-1.5 1.6-1.5h1.7V4.6c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.1H8.2V14H11v8h3.5Z" />
+      <svg
+        aria-hidden="true"
+        className="h-[18px] w-[18px] translate-y-[2px]"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="#fff"
+          d="M14.5 22v-8h2.7l.4-3.1h-3.1v-2c0-.9.3-1.5 1.6-1.5h1.7V4.6c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.1H8.2V14H11v8h3.5Z"
+        />
       </svg>
     </span>
   );
@@ -783,61 +810,177 @@ function LoginSidebar({ language, mode, open, onClose, onModeChange }) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-labelledby="login-title">
-      <button className="login-overlay absolute inset-0 bg-slate-950/30 backdrop-blur-[2px]" type="button" onClick={onClose} aria-label={t.close} />
+    <div
+      className="fixed inset-0 z-[70]"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="login-title"
+    >
+      <button
+        className="login-overlay absolute inset-0 bg-slate-950/30 backdrop-blur-[2px]"
+        type="button"
+        onClick={onClose}
+        aria-label={t.close}
+      />
       <aside className="login-sidebar absolute inset-y-0 right-0 flex w-full max-w-md flex-col overflow-y-auto bg-[#fffdf7] px-6 py-7 shadow-[-20px_0_55px_rgba(15,23,42,0.16)] sm:px-8">
         <div className="flex items-center justify-between">
           <Brand compact />
-          <button className="rounded-full border border-slate-200 bg-white p-2 text-slate-600 transition hover:border-yellow-300 hover:text-slate-900" type="button" onClick={onClose} aria-label={t.close}>
+          <button
+            className="rounded-full border border-slate-200 bg-white p-2 text-slate-600 transition hover:border-yellow-300 hover:text-slate-900"
+            type="button"
+            onClick={onClose}
+            aria-label={t.close}
+          >
             <X size={21} weight="bold" />
           </button>
         </div>
         <div className="mt-14">
-          <h2 id="login-title" className="text-3xl font-black tracking-tight text-slate-900">{isSignup ? t.signupTitle : t.title}</h2>
-          <p className="mt-3 text-sm font-medium leading-6 text-slate-600">{isSignup ? t.signupCopy : t.copy}</p>
+          <h2
+            id="login-title"
+            className="text-3xl font-black tracking-tight text-slate-900"
+          >
+            {isSignup ? t.signupTitle : t.title}
+          </h2>
+          <p className="mt-3 text-sm font-medium leading-6 text-slate-600">
+            {isSignup ? t.signupCopy : t.copy}
+          </p>
         </div>
-        <form className="mt-8 space-y-5" onSubmit={(event) => event.preventDefault()}>
+        <form
+          className="mt-8 space-y-5"
+          onSubmit={(event) => event.preventDefault()}
+        >
           {isSignup && (
             <label className="block">
-              <span className="text-sm font-extrabold text-slate-700">{t.parentName}</span>
+              <span className="text-sm font-extrabold text-slate-700">
+                {t.parentName}
+              </span>
               <span className="mt-2 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 transition focus-within:border-green-500 focus-within:ring-4 focus-within:ring-green-100">
-                <Users className="shrink-0 text-green-700" size={20} weight="bold" />
-                <input className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400" type="text" name="parentName" placeholder={t.parentNamePlaceholder} autoComplete="name" required />
+                <Users
+                  className="shrink-0 text-green-700"
+                  size={20}
+                  weight="bold"
+                />
+                <input
+                  className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400"
+                  type="text"
+                  name="parentName"
+                  placeholder={t.parentNamePlaceholder}
+                  autoComplete="name"
+                  required
+                />
               </span>
             </label>
           )}
           <label className="block">
-            <span className="text-sm font-extrabold text-slate-700">{t.email}</span>
+            <span className="text-sm font-extrabold text-slate-700">
+              {t.email}
+            </span>
             <span className="mt-2 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 transition focus-within:border-green-500 focus-within:ring-4 focus-within:ring-green-100">
-              <EnvelopeSimple className="shrink-0 text-green-700" size={20} weight="bold" />
-              <input className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400" type="email" name="email" placeholder={t.emailPlaceholder} autoComplete="email" required />
+              <EnvelopeSimple
+                className="shrink-0 text-green-700"
+                size={20}
+                weight="bold"
+              />
+              <input
+                className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400"
+                type="email"
+                name="email"
+                placeholder={t.emailPlaceholder}
+                autoComplete="email"
+                required
+              />
             </span>
           </label>
           <label className="block">
-            <span className="text-sm font-extrabold text-slate-700">{t.password}</span>
+            <span className="text-sm font-extrabold text-slate-700">
+              {t.password}
+            </span>
             <span className="mt-2 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 transition focus-within:border-green-500 focus-within:ring-4 focus-within:ring-green-100">
-              <LockKey className="shrink-0 text-green-700" size={20} weight="bold" />
-              <input className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400" type="password" name="password" placeholder={t.passwordPlaceholder} autoComplete={isSignup ? "new-password" : "current-password"} required />
+              <LockKey
+                className="shrink-0 text-green-700"
+                size={20}
+                weight="bold"
+              />
+              <input
+                className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400"
+                type="password"
+                name="password"
+                placeholder={t.passwordPlaceholder}
+                autoComplete={isSignup ? "new-password" : "current-password"}
+                required
+              />
             </span>
           </label>
           {isSignup && (
             <label className="block">
-              <span className="text-sm font-extrabold text-slate-700">{t.confirmPassword}</span>
+              <span className="text-sm font-extrabold text-slate-700">
+                {t.confirmPassword}
+              </span>
               <span className="mt-2 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 transition focus-within:border-green-500 focus-within:ring-4 focus-within:ring-green-100">
-                <LockKey className="shrink-0 text-green-700" size={20} weight="bold" />
-                <input className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400" type="password" name="confirmPassword" placeholder={t.confirmPasswordPlaceholder} autoComplete="new-password" required />
+                <LockKey
+                  className="shrink-0 text-green-700"
+                  size={20}
+                  weight="bold"
+                />
+                <input
+                  className="w-full bg-transparent text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400"
+                  type="password"
+                  name="confirmPassword"
+                  placeholder={t.confirmPasswordPlaceholder}
+                  autoComplete="new-password"
+                  required
+                />
               </span>
             </label>
           )}
-          {!isSignup && <div className="text-right"><a className="text-sm font-extrabold text-green-700 transition hover:text-green-600" href="#top">{t.forgot}</a></div>}
-          <button className="tactile-button w-full rounded-full bg-yellow-400 px-6 py-4 text-sm font-black text-slate-900 shadow-[0_6px_0_#c99d00] transition hover:bg-yellow-300" type="submit">{isSignup ? t.signupSubmit : t.submit}</button>
+          {!isSignup && (
+            <div className="text-right">
+              <a
+                className="text-sm font-extrabold text-green-700 transition hover:text-green-600"
+                href="#top"
+              >
+                {t.forgot}
+              </a>
+            </div>
+          )}
+          <button
+            className="tactile-button w-full rounded-full bg-yellow-400 px-6 py-4 text-sm font-black text-slate-900 shadow-[0_6px_0_#c99d00] transition hover:bg-yellow-300"
+            type="submit"
+          >
+            {isSignup ? t.signupSubmit : t.submit}
+          </button>
         </form>
-        <div className="my-7 flex items-center gap-3 text-xs font-extrabold text-slate-400"><span className="h-px flex-1 bg-slate-200" /><span>{isSignup ? t.signupOr : t.or}</span><span className="h-px flex-1 bg-slate-200" /></div>
-        <div className="space-y-3">
-          <button className="flex w-full items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 transition hover:border-yellow-300 hover:bg-yellow-50" type="button"><GoogleBrandIcon />{t.google}</button>
-          <button className="flex w-full items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 transition hover:border-sky-300 hover:bg-sky-50" type="button"><FacebookBrandIcon />{t.facebook}</button>
+        <div className="my-7 flex items-center gap-3 text-xs font-extrabold text-slate-400">
+          <span className="h-px flex-1 bg-slate-200" />
+          <span>{isSignup ? t.signupOr : t.or}</span>
+          <span className="h-px flex-1 bg-slate-200" />
         </div>
-        <p className="mt-auto pt-10 text-center text-sm font-semibold text-slate-600">{isSignup ? t.haveAccount : t.noAccount} <button className="font-black text-green-700 transition hover:text-green-600" type="button" onClick={() => onModeChange(isSignup ? "signin" : "signup")}>{isSignup ? t.signin : t.signup}</button></p>
+        <div className="space-y-3">
+          <button
+            className="flex w-full items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 transition hover:border-yellow-300 hover:bg-yellow-50"
+            type="button"
+          >
+            <GoogleBrandIcon />
+            {t.google}
+          </button>
+          <button
+            className="flex w-full items-center justify-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 transition hover:border-sky-300 hover:bg-sky-50"
+            type="button"
+          >
+            <FacebookBrandIcon />
+            {t.facebook}
+          </button>
+        </div>
+        <p className="mt-auto pt-10 text-center text-sm font-semibold text-slate-600">
+          {isSignup ? t.haveAccount : t.noAccount}{" "}
+          <button
+            className="font-black text-green-700 transition hover:text-green-600"
+            type="button"
+            onClick={() => onModeChange(isSignup ? "signin" : "signup")}
+          >
+            {isSignup ? t.signin : t.signup}
+          </button>
+        </p>
       </aside>
     </div>
   );
@@ -902,7 +1045,16 @@ function Navbar({ t, language, setLanguage, onLogin }) {
               {label}
             </a>
           ))}
-          <button type="button" onClick={() => { setOpen(false); onLogin(); }} className="block w-full rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 hover:bg-yellow-50">{t.login}</button>
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              onLogin();
+            }}
+            className="block w-full rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 hover:bg-yellow-50"
+          >
+            {t.login}
+          </button>
           <ButtonLink className="mt-3 w-full">{t.getStarted}</ButtonLink>
         </div>
       )}
@@ -1409,7 +1561,7 @@ function PricingSection({ t }) {
               {t.pricing.premiumCopy}
             </p>
             <p className="mt-7 text-5xl font-black tracking-tight">
-              $2.99
+              {t.pricing.premiumPrice}
               <span className="text-base text-green-100">
                 {" "}
                 {t.pricing.month}
@@ -1522,8 +1674,22 @@ function App() {
   }, [language]);
   return (
     <div className="min-h-[100dvh] overflow-x-hidden bg-white text-slate-900">
-      <Navbar t={t} language={language} setLanguage={setLanguage} onLogin={() => { setAuthMode("signin"); setLoginOpen(true); }} />
-      <LoginSidebar language={language} mode={authMode} open={loginOpen} onClose={() => setLoginOpen(false)} onModeChange={setAuthMode} />
+      <Navbar
+        t={t}
+        language={language}
+        setLanguage={setLanguage}
+        onLogin={() => {
+          setAuthMode("signin");
+          setLoginOpen(true);
+        }}
+      />
+      <LoginSidebar
+        language={language}
+        mode={authMode}
+        open={loginOpen}
+        onClose={() => setLoginOpen(false)}
+        onModeChange={setAuthMode}
+      />
       <main>
         <div className="flex min-h-[100dvh] flex-col">
           <HeroSection t={t.hero} />

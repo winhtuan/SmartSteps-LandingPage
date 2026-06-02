@@ -19,6 +19,7 @@ test('switches to Vietnamese and saves the selected language', () => {
   expect(
     screen.getByRole('heading', { name: /rèn kỹ năng sống qua từng bước vui học/i })
   ).toBeInTheDocument();
+  expect(screen.getByText(/129k/)).toHaveTextContent('129k / tháng');
   expect(localStorage.getItem('smartsteps-language')).toBe('vi');
 });
 
