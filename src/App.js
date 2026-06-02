@@ -33,10 +33,14 @@ import mascotConfident from "./assets/mascot/mascot-cat-confident.png";
 import mascotHappyWave from "./assets/mascot/mascot-cat-happy-wave.png";
 import mascotSinging from "./assets/mascot/mascot-cat-singing.png";
 import mascotSpeaking from "./assets/mascot/mascot-cat-speaking.png";
+import freePlanIcon from "./assets/pricing/plan-free.svg";
+import proPlanIcon from "./assets/pricing/plan-pro.svg";
+import maxPlanIcon from "./assets/pricing/plan-max.svg";
 
 const translations = {
   en: {
     nav: [
+      "About",
       "Learning Worlds",
       "Learning Steps",
       "Parent Dashboard",
@@ -47,12 +51,12 @@ const translations = {
     openMenu: "Open menu",
     closeMenu: "Close menu",
     hero: {
-      lead: "Build real-life skills through",
+      lead: "Build life skills for kids through",
       accent: "playful steps",
-      copy: "Interactive adventures help children practice safety, communication, and problem-solving with confidence.",
+      copy: "SmartSteps helps children practice safety, communication, and problem-solving through short, interactive lessons.",
       primary: "Start Learning Free",
       secondary: "See How It Works",
-      alt: "Illustrated school island with a road safety crossing",
+      alt: "SmartSteps life skills app lesson teaching children how to cross the road safely",
       skill: "Skill unlocked",
       road: "Road safety basics",
       streak: "7 day streak",
@@ -70,10 +74,10 @@ const translations = {
     ],
     why: {
       kicker: "Why parents choose SmartSteps",
-      title: "Real-life skills, one small lesson at a time.",
-      copy: "",
-      highlight: "Built for busy parents and curious kids.",
-      pills: ["Quick lessons", "Safe content", "Visible progress"],
+      title: "Essential life skills in short daily lessons.",
+      copy: "SmartSteps turns everyday situations into practical lessons children can understand and use beyond the screen.",
+      highlight: "Designed for young learners and the parents guiding them.",
+      pills: ["5-minute lessons", "Age-appropriate content", "Clear progress tracking"],
     },
     features: [
       [
@@ -102,10 +106,9 @@ const translations = {
       ],
     ],
     worldsHeading: {
-      kicker: "Learning worlds",
-      title: "A new island for every growing skill.",
-      copy: "Children choose where to explore next. Each world turns practical learning into a guided adventure.",
-      note: "New worlds unlock as learners complete activities and build steady habits.",
+      kicker: "Life skills curriculum",
+      title: "Every island builds an essential skill.",
+      copy: "Children explore safety, communication, teamwork, and problem-solving through interactive learning worlds.",
     },
     worlds: [
       [
@@ -134,9 +137,9 @@ const translations = {
       ],
     ],
     how: {
-      kicker: "How it works",
-      title: "Five simple steps. One confident learner.",
-      copy: "SmartSteps keeps the rhythm familiar, so children can focus on the skill instead of figuring out the app.",
+      kicker: "How SmartSteps works",
+      title: "Five simple steps to practice life skills.",
+      copy: "Every lesson guides children from exploration to practice, feedback, and visible progress.",
     },
     steps: [
       ["Explore", "Pick a colorful learning world."],
@@ -147,8 +150,8 @@ const translations = {
     ],
     coach: {
       kicker: "AI learning coach",
-      title: "Feedback children can actually use.",
-      copy: "After each challenge, the SmartSteps coach explains what went well and suggests one simple next step.",
+      title: "Personalized feedback that helps children grow.",
+      copy: "After each challenge, the SmartSteps coach highlights what went well and suggests a practical next step.",
       alt: "SmartSteps mascot giving friendly guidance",
       items: [
         "Personalized to each response",
@@ -157,9 +160,9 @@ const translations = {
       ],
     },
     parents: {
-      kicker: "For parents",
-      title: "Stay involved without hovering.",
-      copy: "Weekly reports make it easy to support progress, celebrate effort, and notice where a little extra practice could help.",
+      kicker: "Progress tracking for parents",
+      title: "Know what your child learned and what to practice next.",
+      copy: "Weekly reports help parents track life skills, celebrate progress, and support children at the right time.",
       items: [
         "Weekly summaries",
         "Skill tracking",
@@ -178,43 +181,71 @@ const translations = {
         "Mia is building a strong habit of pausing before making a safety choice.",
     },
     testimonials: {
-      kicker: "Family stories",
-      title: "Loved by Families Around the World",
-      copy: "Parents and teachers use SmartSteps to help children build confidence in everyday situations.",
+      kicker: "Parent stories",
+      title: "Helping families build confidence one skill at a time.",
+      copy: "SmartSteps helps families practice useful life skills through familiar situations and lessons children can apply.",
       stars: "5 out of 5 stars",
     },
     pricing: {
-      kicker: "Simple pricing",
-      title: "Start free. Grow when your child is ready.",
-      copy: "No complicated tiers. Pick the plan that fits your family's learning rhythm.",
-      free: "Free",
-      freeCopy: "A simple way to explore SmartSteps.",
-      freeItems: [
-        "Safety Island access",
-        "Basic coach feedback",
-        "One child profile",
+      kicker: "SmartSteps plans",
+      title: "Choose the right life skills learning plan.",
+      copy: "Start free or unlock more interactive lessons, personalized feedback, and progress reports.",
+      monthly: "Monthly",
+      yearly: "Yearly",
+      save: "-54%",
+      plans: [
+        {
+          name: "FREE",
+          copy: "Explore the essential lessons before choosing a learning plan.",
+          price: "0 VND",
+          billing: "No payment required",
+          cta: "Start Learning Free",
+          items: [
+            "Basic lessons for real-life situations",
+            "Core safety awareness principles",
+            "Interactive visual learning",
+            "Overview progress tracking",
+          ],
+        },
+        {
+          name: "PRO",
+          copy: "Unlock the full learning experience with advanced features.",
+          paid: true,
+          pricing: {
+            monthly: ["199,000 VND", "/ month"],
+            yearly: ["1,299,000 VND", "/ year"],
+          },
+          items: [
+            "All features from the free version",
+            "Advanced lessons based on real-life situations",
+            "Personalized learning path",
+            "Practice activities with feedback",
+          ],
+        },
+        {
+          name: "MAX",
+          copy: "Lifetime access to the complete SmartSteps learning experience.",
+          price: "2,999,999 VND",
+          billing: "/ lifetime",
+          paid: true,
+          items: [
+            "All Premium features",
+            "Exclusive real-life simulations",
+            "Detailed progress reports for parents",
+            "Three months of premium gifts",
+          ],
+        },
       ],
-      freeCta: "Get Started Free",
-      popular: "Most popular",
-      premiumCopy: "The full adventure for curious learners.",
-      premiumPrice: "$5.49",
-      month: "/ month",
-      premiumItems: [
-        "Every learning island",
-        "Personalized coach feedback",
-        "Up to four child profiles",
-        "Detailed parent reports",
-      ],
-      trial: "Start 7-Day Trial",
+      signup: "Sign Up",
     },
     cta: {
-      title: "Ready for the first small step?",
-      copy: "Start with one learning world and help your child build confidence through play.",
+      title: "Start building your child's life skills today.",
+      copy: "Explore the first interactive lesson and help your child feel more confident in everyday situations.",
       primary: "Start Learning Free",
-      secondary: "Get App",
+      secondary: "Explore Lessons",
     },
     footer: {
-      copy: "Real-life learning adventures for curious children and the parents cheering them on.",
+      copy: "A life skills learning app for kids with interactive lessons about safety, communication, and problem-solving.",
       groups: [
         ["Product", "How it Works", "Curriculum Map", "For Parents", "Pricing"],
         [
@@ -237,18 +268,18 @@ const translations = {
     },
   },
   vi: {
-    nav: ["Thế giới học tập", "Các bước học", "Theo dõi phụ huynh", "Gói học"],
+    nav: ["Giới thiệu", "Khám phá", "Cách học", "Phụ huynh", "Học phí"],
     login: "Đăng nhập",
     getStarted: "Bắt đầu",
     openMenu: "Mở menu",
     closeMenu: "Đóng menu",
     hero: {
-      lead: "Rèn kỹ năng sống qua",
+      lead: "Rèn kỹ năng sống cho trẻ qua",
       accent: "từng bước vui học",
-      copy: "Những chuyến phiêu lưu tương tác giúp trẻ tự tin luyện tập an toàn, giao tiếp và giải quyết vấn đề.",
+      copy: "SmartSteps giúp trẻ luyện tập an toàn, giao tiếp và giải quyết vấn đề qua các bài học tương tác ngắn gọn.",
       primary: "Học miễn phí",
       secondary: "Xem cách hoạt động",
-      alt: "Minh họa đảo trường học với bài học an toàn khi qua đường",
+      alt: "Ứng dụng SmartSteps minh họa bài học kỹ năng an toàn qua đường cho trẻ",
       skill: "Đã mở kỹ năng",
       road: "An toàn qua đường",
       streak: "Chuỗi 7 ngày",
@@ -263,21 +294,21 @@ const translations = {
       rewardCopy: "Huy hiệu an toàn đầu tiên",
     },
     stats: [
-      ["10k+", "bạn nhỏ đang học"],
-      ["250k+", "bài học đã hoàn thành"],
-      ["96%", "phụ huynh hài lòng"],
-      ["100%", "không quảng cáo"],
+      ["10k+", "Bạn nhỏ đang học"],
+      ["250k+", "Bài học đã hoàn thành"],
+      ["96%", "Phụ huynh hài lòng"],
+      ["100%", "Không quảng cáo"],
     ],
     why: {
-      kicker: "Vì sao SmartSteps hiệu quả",
-      title: "Bài học nhỏ. Tự tin mỗi ngày.",
-      copy: "Mỗi hoạt động đều dựa trên kỹ năng sống trẻ có thể hiểu hôm nay và áp dụng ngày mai.",
+      kicker: "Vì sao phụ huynh chọn SmartSteps",
+      title: "Kỹ năng sống thiết yếu, bài học ngắn mỗi ngày.",
+      copy: "SmartSteps biến các tình huống đời thường thành bài học kỹ năng sống dễ hiểu để trẻ tự tin áp dụng ngoài đời.",
       highlight:
-        "Thiết kế cho khả năng tập trung ngắn, luyện tập thực tế và sự an tâm của phụ huynh.",
+        "Thiết kế vừa sức cho trẻ nhỏ, dễ theo dõi cho phụ huynh.",
       pills: [
         "Bài học 5 phút",
-        "Phản hồi theo lứa tuổi",
-        "Không gian học an toàn",
+        "Nội dung phù hợp lứa tuổi",
+        "Theo dõi tiến độ rõ ràng",
       ],
     },
     features: [
@@ -307,10 +338,9 @@ const translations = {
       ],
     ],
     worldsHeading: {
-      kicker: "Thế giới học tập",
-      title: "Mỗi hòn đảo, một kỹ năng mới.",
-      copy: "Trẻ tự chọn nơi khám phá tiếp theo. Mỗi thế giới biến kỹ năng thực tế thành một chuyến phiêu lưu có hướng dẫn.",
-      note: "Thế giới mới mở ra khi trẻ hoàn thành hoạt động và duy trì thói quen học.",
+      kicker: "Nội dung học kỹ năng sống",
+      title: "Mỗi hòn đảo, một nhóm kỹ năng thiết yếu.",
+      copy: "Trẻ khám phá bài học về an toàn, giao tiếp, làm việc nhóm và giải quyết vấn đề trong từng thế giới tương tác.",
     },
     worlds: [
       [
@@ -339,9 +369,9 @@ const translations = {
       ],
     ],
     how: {
-      kicker: "Cách hoạt động",
-      title: "Năm bước đơn giản. Bé thêm tự tin.",
-      copy: "Nhịp học quen thuộc giúp trẻ tập trung vào kỹ năng thay vì loay hoay tìm cách dùng ứng dụng.",
+      kicker: "Cách SmartSteps hoạt động",
+      title: "Năm bước học kỹ năng sống dễ làm quen.",
+      copy: "Mỗi bài học dẫn trẻ từ khám phá đến luyện tập, nhận phản hồi và ghi nhận tiến bộ.",
     },
     steps: [
       ["Khám phá", "Chọn một thế giới học tập đầy màu sắc."],
@@ -352,8 +382,8 @@ const translations = {
     ],
     coach: {
       kicker: "Trợ lý học tập AI",
-      title: "Phản hồi trẻ dễ hiểu và áp dụng.",
-      copy: "Sau mỗi thử thách, trợ lý SmartSteps giải thích điểm tốt và gợi ý một bước nhỏ để tiến bộ.",
+      title: "Phản hồi cá nhân hóa giúp trẻ tiến bộ.",
+      copy: "Sau mỗi thử thách, trợ lý SmartSteps ghi nhận điểm tốt và gợi ý bước luyện tập phù hợp cho trẻ.",
       alt: "Linh vật SmartSteps đưa ra hướng dẫn thân thiện",
       items: [
         "Cá nhân hóa theo từng câu trả lời",
@@ -362,9 +392,9 @@ const translations = {
       ],
     },
     parents: {
-      kicker: "Dành cho phụ huynh",
-      title: "Theo sát vừa đủ, không cần kèm từng bước.",
-      copy: "Báo cáo tuần giúp bạn ghi nhận nỗ lực, hỗ trợ tiến bộ và nhận ra kỹ năng cần luyện thêm.",
+      kicker: "Theo dõi tiến độ cho phụ huynh",
+      title: "Hiểu con đang học gì và cần luyện thêm gì.",
+      copy: "Báo cáo tuần giúp phụ huynh theo dõi kỹ năng sống của trẻ, ghi nhận tiến bộ và hỗ trợ đúng lúc.",
       items: [
         "Tổng kết mỗi tuần",
         "Theo dõi kỹ năng",
@@ -383,43 +413,71 @@ const translations = {
         "Mia đang tạo thói quen dừng lại suy nghĩ trước khi đưa ra lựa chọn an toàn.",
     },
     testimonials: {
-      kicker: "Chia sẻ từ gia đình",
-      title: "Được các gia đình trên khắp thế giới yêu thích",
-      copy: "Phụ huynh và giáo viên dùng SmartSteps để giúp trẻ tự tin xử lý các tình huống hằng ngày.",
+      kicker: "Chia sẻ từ phụ huynh",
+      title: "Đồng hành cùng trẻ tự tin hơn mỗi ngày.",
+      copy: "SmartSteps hỗ trợ gia đình luyện kỹ năng sống cho trẻ qua những tình huống gần gũi và bài học dễ áp dụng.",
       stars: "5 trên 5 sao",
     },
     pricing: {
-      kicker: "Học phí đơn giản",
-      title: "Bắt đầu miễn phí. Nâng cấp khi bé sẵn sàng.",
-      copy: "Không có nhiều gói phức tạp. Chọn nhịp học phù hợp với gia đình bạn.",
-      free: "Miễn phí",
-      freeCopy: "Cách đơn giản để khám phá SmartSteps.",
-      freeItems: [
-        "Truy cập Đảo An Toàn",
-        "Phản hồi cơ bản từ trợ lý",
-        "Một hồ sơ trẻ",
+      kicker: "Gói học SmartSteps",
+      title: "Chọn gói học kỹ năng sống phù hợp cho bé.",
+      copy: "Bắt đầu miễn phí hoặc mở khóa thêm bài học tương tác, phản hồi cá nhân hóa và báo cáo tiến độ.",
+      monthly: "Hàng tháng",
+      yearly: "Hàng năm",
+      save: "-54%",
+      plans: [
+        {
+          name: "FREE",
+          copy: "Khám phá các bài học thiết yếu trước khi chọn gói học phù hợp cho bé.",
+          price: "0 VND",
+          billing: "Không cần thanh toán",
+          cta: "Bắt đầu học miễn phí",
+          items: [
+            "Các bài học cơ bản về tình huống thực tế",
+            "Nguyên tắc cơ bản về nhận thức an toàn",
+            "Học tập tương tác dựa trên hình ảnh",
+            "Tổng quan theo dõi tiến độ",
+          ],
+        },
+        {
+          name: "PRO",
+          copy: "Mở khóa đầy đủ các tính năng học tập và bài học tình huống nâng cao.",
+          paid: true,
+          pricing: {
+            monthly: ["199,000 VND", "/ tháng"],
+            yearly: ["1,299,000 VND", "/ năm"],
+          },
+          items: [
+            "Tất cả các tính năng của phiên bản miễn phí",
+            "Bài học nâng cao dựa trên các tình huống thực tế",
+            "Lộ trình học tập cá nhân hóa",
+            "Bài tập thực hành kèm phản hồi",
+          ],
+        },
+        {
+          name: "MAX",
+          copy: "Truy cập trọn đời toàn bộ trải nghiệm học tập SmartSteps.",
+          price: "2,999,999 VND",
+          billing: "/ trọn đời",
+          paid: true,
+          items: [
+            "Tất cả các tính năng của phiên bản Premium",
+            "Các kịch bản mô phỏng thực tế độc quyền",
+            "Báo cáo và thông tin chi tiết dành cho phụ huynh về tiến độ học tập của con em họ",
+            "Gói học tập cao cấp 3 tháng kèm quà tặng",
+          ],
+        },
       ],
-      freeCta: "Bắt đầu miễn phí",
-      popular: "Được chọn nhiều",
-      premiumCopy: "Trọn bộ phiêu lưu cho trẻ ham học hỏi.",
-      premiumPrice: "129k",
-      month: "/ tháng",
-      premiumItems: [
-        "Mọi hòn đảo học tập",
-        "Phản hồi cá nhân hóa",
-        "Tối đa bốn hồ sơ trẻ",
-        "Báo cáo chi tiết cho phụ huynh",
-      ],
-      trial: "Dùng thử 7 ngày",
+      signup: "Đăng ký",
     },
     cta: {
-      title: "Sẵn sàng cho bước nhỏ đầu tiên?",
-      copy: "Bắt đầu với một thế giới học tập và giúp bé thêm tự tin qua từng trò chơi.",
+      title: "Bắt đầu rèn kỹ năng sống cho bé hôm nay.",
+      copy: "Khám phá bài học tương tác đầu tiên và giúp bé tự tin hơn trong những tình huống hằng ngày.",
       primary: "Học miễn phí",
       secondary: "Xem nội dung học",
     },
     footer: {
-      copy: "Những chuyến phiêu lưu rèn kỹ năng sống dành cho trẻ ham học hỏi và cha mẹ luôn đồng hành.",
+      copy: "Ứng dụng học kỹ năng sống cho trẻ qua bài học tương tác về an toàn, giao tiếp và giải quyết vấn đề.",
       groups: [
         [
           "Sản phẩm",
@@ -446,6 +504,21 @@ const translations = {
       copyright: "Bản quyền 2026 SmartSteps. Đã đăng ký mọi quyền.",
       safety: "An toàn cho trẻ, không quảng cáo",
     },
+  },
+};
+
+const seoTranslations = {
+  en: {
+    title: "SmartSteps | Life Skills App for Kids",
+    description:
+      "SmartSteps helps children practice safety, communication, and problem-solving through short interactive lessons with progress tracking for parents.",
+    locale: "en_US",
+  },
+  vi: {
+    title: "SmartSteps | Ứng dụng học kỹ năng sống cho trẻ",
+    description:
+      "SmartSteps là ứng dụng học kỹ năng sống cho trẻ, giúp bé luyện tập an toàn, giao tiếp và giải quyết vấn đề qua bài học tương tác ngắn gọn.",
+    locale: "vi_VN",
   },
 };
 
@@ -568,6 +641,28 @@ const worldMeta = [
   [Lock, "bg-orange-100 text-orange-700"],
 ];
 const stepIcons = [MapTrifold, BookOpen, GameController, Sparkle, Medal];
+const stepTones = [
+  {
+    card: "border-green-100 bg-green-50/55",
+    icon: "bg-green-100 text-green-700 group-hover:bg-green-200",
+  },
+  {
+    card: "border-yellow-100 bg-yellow-50/65",
+    icon: "bg-yellow-100 text-yellow-700 group-hover:bg-yellow-200",
+  },
+  {
+    card: "border-sky-100 bg-sky-50/65",
+    icon: "bg-sky-100 text-sky-700 group-hover:bg-sky-200",
+  },
+  {
+    card: "border-orange-100 bg-orange-50/60",
+    icon: "bg-orange-100 text-orange-700 group-hover:bg-orange-200",
+  },
+  {
+    card: "border-lime-100 bg-lime-50/65",
+    icon: "bg-lime-100 text-lime-700 group-hover:bg-lime-200",
+  },
+];
 const parentIcons = [ClockCounterClockwise, TrendUp, Barbell, Heart];
 const testimonials = [
   [
@@ -657,7 +752,14 @@ const tones = [
   "bg-sky-100 text-sky-700",
   "bg-orange-100 text-orange-700",
 ];
-const navHrefs = ["#curriculum", "#how-it-works", "#parents", "#pricing"];
+const navHrefs = [
+  "#why-smartsteps",
+  "#curriculum",
+  "#how-it-works",
+  "#parents",
+  "#pricing",
+];
+const planIcons = [maxPlanIcon, proPlanIcon, freePlanIcon];
 
 function Brand({ compact = false }) {
   return (
@@ -841,8 +943,20 @@ function LoginSidebar({ language, mode, open, onClose, onModeChange }) {
           >
             {isSignup ? t.signupTitle : t.title}
           </h2>
-          <p className="mt-3 text-sm font-medium leading-6 text-slate-600">
-            {isSignup ? t.signupCopy : t.copy}
+          {isSignup && (
+            <p className="mt-3 text-sm font-medium leading-6 text-slate-600">
+              {t.signupCopy}
+            </p>
+          )}
+          <p className="mt-5 text-sm font-semibold text-slate-600">
+            {isSignup ? t.haveAccount : t.noAccount}{" "}
+            <button
+              className="font-black text-green-700 transition hover:text-green-600"
+              type="button"
+              onClick={() => onModeChange(isSignup ? "signin" : "signup")}
+            >
+              {isSignup ? t.signin : t.signup}
+            </button>
           </p>
         </div>
         <form
@@ -971,16 +1085,6 @@ function LoginSidebar({ language, mode, open, onClose, onModeChange }) {
             {t.facebook}
           </button>
         </div>
-        <p className="mt-auto pt-10 text-center text-sm font-semibold text-slate-600">
-          {isSignup ? t.haveAccount : t.noAccount}{" "}
-          <button
-            className="font-black text-green-700 transition hover:text-green-600"
-            type="button"
-            onClick={() => onModeChange(isSignup ? "signin" : "signup")}
-          >
-            {isSignup ? t.signin : t.signup}
-          </button>
-        </p>
       </aside>
     </div>
   );
@@ -1097,11 +1201,10 @@ function HeroSection({ t }) {
     >
       <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-12 lg:gap-8">
         <div className="text-center lg:col-span-5 lg:text-left">
-          <h1 className="fade-up text-5xl font-black leading-[0.98] tracking-[-0.055em] text-slate-900 sm:text-6xl lg:text-[4.75rem]">
+          <h1 className="hero-title fade-up text-5xl font-black leading-[0.98] tracking-[-0.055em] text-slate-900 sm:text-6xl lg:text-[4.75rem]">
             {t.lead}{" "}
-            <span className="relative inline-block text-green-600">
+            <span className="hero-title-accent text-green-600">
               {t.accent}
-              <span className="absolute -bottom-2 left-1/2 h-2 w-[92%] -translate-x-1/2 rounded-full bg-yellow-300" />
             </span>
           </h1>
           <p className="fade-up animation-delay-1 mx-auto mt-8 max-w-xl text-base font-medium leading-7 text-slate-600 sm:text-lg lg:mx-0">
@@ -1235,7 +1338,6 @@ function WhySection({ t, language }) {
                 <span
                   className={`feature-icon relative inline-flex rounded-2xl p-3 transition-transform duration-300 group-hover:rotate-3 group-hover:scale-110 ${tone}`}
                 >
-                  <span className="absolute inset-0 -z-10 rounded-2xl opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-70 bg-current" />
                   <Icon size={27} weight="duotone" />
                 </span>
                 <h3 className="relative mt-6 text-xl font-black tracking-tight text-slate-900">
@@ -1282,11 +1384,8 @@ function WorldsSection({ t }) {
       className="section-space overflow-hidden bg-lime-50 px-4 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
-        <div className="grid items-end gap-8 lg:grid-cols-[1fr_0.8fr]">
+        <div>
           <SectionHeading align="left" {...t.worldsHeading} />
-          <p className="max-w-md text-sm font-bold leading-6 text-green-800 lg:justify-self-end">
-            {t.worldsHeading.note}
-          </p>
         </div>
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {t.worlds.map(([title, copy, lessons, progress], index) => {
@@ -1320,27 +1419,25 @@ function StepsSection({ t }) {
   return (
     <section
       id="how-it-works"
-      className="section-space bg-white px-4 sm:px-6 lg:px-8"
+      className="section-space bg-yellow-50/45 px-4 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
         <SectionHeading {...t.how} />
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {t.steps.map(([title, copy], index) => {
             const Icon = stepIcons[index];
+            const tone = stepTones[index];
             return (
               <article
                 key={title}
-                className="rounded-3xl border border-slate-100 bg-[#fffdf7] p-5"
+                className={`group relative flex min-h-56 flex-col overflow-hidden rounded-3xl border p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-soft ${tone.card}`}
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300 text-sm font-black text-yellow-900">
-                  {index + 1}
+                <span
+                  className={`flex h-11 w-11 items-center justify-center rounded-2xl transition duration-300 group-hover:rotate-3 ${tone.icon}`}
+                >
+                  <Icon size={27} weight="duotone" />
                 </span>
-                <Icon
-                  className="mt-8 text-green-700"
-                  size={28}
-                  weight="duotone"
-                />
-                <h3 className="mt-4 text-lg font-black text-slate-900">
+                <h3 className="mt-8 text-lg font-black text-slate-900">
                   {title}
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{copy}</p>
@@ -1519,64 +1616,112 @@ function TestimonialsSection({ t, language }) {
 }
 
 function PricingSection({ t }) {
+  const [billingCycle, setBillingCycle] = useState("yearly");
+
   return (
     <section
       id="pricing"
-      className="section-space bg-white px-4 sm:px-6 lg:px-8"
+      className="section-space overflow-hidden bg-[#fffdf7] px-4 sm:px-6 lg:px-8"
     >
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-7xl">
         <SectionHeading {...t.pricing} />
-        <div className="mt-12 grid gap-5 md:grid-cols-2">
-          <article className="flex flex-col rounded-[2rem] border border-slate-200 bg-white p-7">
-            <h3 className="text-2xl font-black text-slate-900">
-              {t.pricing.free}
-            </h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              {t.pricing.freeCopy}
-            </p>
-            <p className="mt-7 text-5xl font-black tracking-tight text-slate-900">
-              $0
-            </p>
-            <ul className="mt-8 flex-1 space-y-4">
-              {t.pricing.freeItems.map((item) => (
-                <li
-                  key={item}
-                  className="flex gap-3 text-sm font-bold text-slate-700"
+        <div className="mt-14 grid items-stretch gap-5 lg:grid-cols-3 xl:gap-6">
+          {t.pricing.plans.map((plan, index) => {
+            const planIcon = planIcons[index];
+            const [price, billing] = plan.pricing
+              ? plan.pricing[billingCycle]
+              : [plan.price, plan.billing];
+
+            return (
+              <article
+                key={plan.name}
+                className={`relative flex flex-col overflow-hidden rounded-[2rem] border p-6 transition duration-300 sm:p-7 xl:p-8 ${
+                  plan.paid
+                    ? plan.pricing
+                      ? "border-green-600 bg-green-600 text-white shadow-[0_18px_40px_rgba(22,163,74,0.2)] hover:-translate-y-1 hover:shadow-[0_24px_52px_rgba(22,163,74,0.28)]"
+                      : "border-[#149447] bg-[#149447] text-white shadow-[0_18px_40px_rgba(20,148,71,0.2)] hover:-translate-y-1 hover:shadow-[0_24px_52px_rgba(20,148,71,0.28)]"
+                    : "border-slate-200 bg-slate-50 shadow-sm hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl"
+                }`}
+              >
+                <div className="flex min-h-12 items-center gap-3">
+                  <img
+                    className={`h-12 w-12 shrink-0 ${plan.paid ? "brightness-0 invert" : "opacity-80"}`}
+                    src={planIcon}
+                    alt=""
+                  />
+                  <h3
+                    className={`text-3xl font-black ${plan.paid ? "text-white" : "text-slate-900"}`}
+                  >
+                    {plan.name}
+                  </h3>
+                </div>
+                <p
+                  className={`mt-5 text-sm leading-6 lg:min-h-[4.5rem] ${plan.paid ? "text-green-100" : "text-slate-600"}`}
                 >
-                  <Check className="text-green-600" size={20} weight="bold" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <ButtonLink tone="outline" className="mt-8 w-full">
-              {t.pricing.freeCta}
-            </ButtonLink>
-          </article>
-          <article className="relative flex flex-col overflow-hidden rounded-[2rem] border border-green-700 bg-green-700 p-7 text-white shadow-[0_18px_45px_rgba(35,113,30,0.24)]">
-            <span className="absolute right-5 top-5 rounded-full bg-yellow-300 px-3 py-1 text-xs font-black text-yellow-900">
-              {t.pricing.popular}
-            </span>
-            <h3 className="text-2xl font-black">Premium</h3>
-            <p className="mt-2 text-sm leading-6 text-green-100">
-              {t.pricing.premiumCopy}
-            </p>
-            <p className="mt-7 text-5xl font-black tracking-tight">
-              {t.pricing.premiumPrice}
-              <span className="text-base text-green-100">
-                {" "}
-                {t.pricing.month}
-              </span>
-            </p>
-            <ul className="mt-8 flex-1 space-y-4">
-              {t.pricing.premiumItems.map((item) => (
-                <li key={item} className="flex gap-3 text-sm font-bold">
-                  <Check className="text-yellow-300" size={20} weight="bold" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <ButtonLink className="mt-8 w-full">{t.pricing.trial}</ButtonLink>
-          </article>
+                  {plan.copy}
+                </p>
+                {plan.pricing && (
+                  <div className="mt-1">
+                    <div className="inline-flex w-fit rounded-full bg-green-900/70 p-1 text-xs font-bold">
+                      {["monthly", "yearly"].map((cycle) => (
+                        <button
+                          key={cycle}
+                          type="button"
+                          aria-pressed={billingCycle === cycle}
+                          onClick={() => setBillingCycle(cycle)}
+                          className={`relative rounded-full px-3 py-1.5 transition ${
+                            billingCycle === cycle
+                              ? "bg-white text-green-800 shadow-sm"
+                              : "text-green-100 hover:text-white"
+                          }`}
+                        >
+                          {t.pricing[cycle]}
+                          {cycle === "yearly" && (
+                            <span className="absolute -right-3 -top-4 -rotate-6 whitespace-nowrap rounded-full bg-yellow-300 px-2 py-0.5 text-[10px] font-black text-yellow-900 shadow-sm">
+                              {t.pricing.save}
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <p
+                  className={`mt-5 flex flex-wrap items-baseline gap-x-2 gap-y-1 whitespace-nowrap text-[1.75rem] font-black tracking-tight xl:text-3xl ${plan.paid ? "text-white" : "text-slate-950"}`}
+                >
+                  <span>{price}</span>
+                  <span
+                    className={`text-xs font-bold tracking-normal ${plan.paid ? "text-green-100" : "text-slate-500"}`}
+                  >
+                    {billing}
+                  </span>
+                </p>
+                <ButtonLink
+                  tone={plan.paid ? "yellow" : "outline"}
+                  className="mt-5 w-full"
+                >
+                  {plan.cta || t.pricing.signup}
+                </ButtonLink>
+                <ul
+                  className={`mt-7 flex-1 space-y-3 border-t pt-6 ${plan.paid ? "border-[#35a964]" : "border-slate-200"}`}
+                >
+                  {plan.items.map((item) => (
+                    <li
+                      key={item}
+                      className={`flex gap-2 text-sm font-medium leading-5 ${plan.paid ? "text-white" : "text-slate-600"}`}
+                    >
+                      <Check
+                        className={`mt-0.5 shrink-0 ${plan.paid ? "text-yellow-300" : "text-green-600"}`}
+                        size={18}
+                        weight="bold"
+                      />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -1662,15 +1807,24 @@ function Footer({ t }) {
 }
 
 function App() {
-  const [language, setLanguage] = useState(
-    () => localStorage.getItem("smartsteps-language") || "en",
-  );
+  const [language, setLanguage] = useState("vi");
   const [loginOpen, setLoginOpen] = useState(false);
   const [authMode, setAuthMode] = useState("signin");
   const t = translations[language] || translations.en;
   useEffect(() => {
-    localStorage.setItem("smartsteps-language", language);
+    const seo = seoTranslations[language] || seoTranslations.vi;
     document.documentElement.lang = language;
+    document.title = seo.title;
+    [
+      ['meta[name="description"]', seo.description],
+      ['meta[property="og:title"]', seo.title],
+      ['meta[property="og:description"]', seo.description],
+      ['meta[property="og:locale"]', seo.locale],
+      ['meta[name="twitter:title"]', seo.title],
+      ['meta[name="twitter:description"]', seo.description],
+    ].forEach(([selector, content]) => {
+      document.querySelector(selector)?.setAttribute("content", content);
+    });
   }, [language]);
   return (
     <div className="min-h-[100dvh] overflow-x-hidden bg-white text-slate-900">

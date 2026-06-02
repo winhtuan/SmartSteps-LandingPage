@@ -11,6 +11,22 @@
   background-size: auto, 44px 44px, 44px 44px;
 }
 
+.hero-title {
+  text-wrap: balance;
+}
+
+.hero-title-accent {
+  padding: 0 0.04em 0.08em;
+  background-image: linear-gradient(
+    to bottom,
+    transparent calc(100% - 0.13em),
+    #fde047 calc(100% - 0.13em)
+  );
+  background-repeat: no-repeat;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
 .brand-logo {
   display: inline-flex;
   overflow: hidden;
