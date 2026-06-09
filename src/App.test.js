@@ -7,10 +7,16 @@ beforeEach(() => {
 });
 
 test('uses Vietnamese by default', () => {
-  localStorage.setItem('smartsteps-language', 'en');
   render(<App />);
   expect(document.documentElement.lang).toBe('vi');
   expect(document.title).toBe('SmartSteps | Ứng dụng học kỹ năng sống cho trẻ');
+});
+
+test('keeps the selected English language preference', () => {
+  localStorage.setItem('smartsteps-language', 'en');
+  render(<App />);
+  expect(document.documentElement.lang).toBe('en');
+  expect(document.title).toBe('SmartSteps | Life Skills App for Kids');
 });
 
 test('renders the SmartSteps landing page', () => {

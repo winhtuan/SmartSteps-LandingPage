@@ -10,10 +10,13 @@ export function Header({
   language,
   setLanguage,
   loginLabel,
+  logoutLabel = "Logout",
+  authenticated = false,
   ctaLabel,
   openMenuLabel,
   closeMenuLabel,
   onLogin,
+  onLogout,
 }) {
   const [open, setOpen] = useState(false);
 
@@ -35,10 +38,10 @@ export function Header({
         <div className="hidden items-center gap-3 lg:flex">
           <button
             type="button"
-            onClick={onLogin}
+            onClick={authenticated ? onLogout : onLogin}
             className="text-sm font-bold text-slate-600 transition hover:text-green-700"
           >
-            {loginLabel}
+            {authenticated ? logoutLabel : loginLabel}
           </button>
           <ButtonLink href="/learning" className="min-h-10 px-5 py-2">
             {ctaLabel}
@@ -80,11 +83,15 @@ export function Header({
             type="button"
             onClick={() => {
               setOpen(false);
-              onLogin();
+              if (authenticated) {
+                onLogout?.();
+              } else {
+                onLogin();
+              }
             }}
             className="block w-full rounded-xl px-3 py-3 text-left text-sm font-bold text-slate-700 hover:bg-yellow-50"
           >
-            {loginLabel}
+            {authenticated ? logoutLabel : loginLabel}
           </button>
           <ButtonLink href="/learning" className="mt-3 w-full md:w-auto md:px-8">
             {ctaLabel}

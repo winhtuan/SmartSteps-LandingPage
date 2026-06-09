@@ -8,6 +8,13 @@ import {
 } from "react";
 import { getIslandSituations, getIslands } from "../services/learningApi";
 import { learningIslands } from "../data/learningMapContent";
+import {
+  confirmPremiumPayment,
+  getPremiumStatus,
+  getStoredPremiumAccount,
+  savePremiumAccount,
+} from "../../premium/services/premiumApi";
+import { AUTH_SESSION_CHANGED_EVENT } from "../../auth/services/authApi";
 
 const islandTones = [
   "bg-green-100 text-green-700",
@@ -23,8 +30,12 @@ export function LearningMapProvider({ children }) {
   const [situationsByIslandId, setSituationsByIslandId] = useState(() =>
     createInitialSituationMap(learningIslands),
   );
+  const [premiumAccount, setPremiumAccount] = useState(() => getStoredPremiumAccount());
+  const [premiumStatus, setPremiumStatus] = useState(null);
+  const [premiumError, setPremiumError] = useState(null);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
+  const hasPremium = premiumStatus?.hasPremium === true;
 
   const loadIslands = useCallback(async () => {
     setStatus("loading");
@@ -55,7 +66,7 @@ export function LearningMapProvider({ children }) {
       const apiSituations = await getIslandSituations(islandId);
       setSituationsByIslandId((current) => ({
         ...current,
-        [islandId]: enrichSituations(apiSituations),
+        [islandId]: normalizeSituations(apiSituations),
       }));
     } catch (apiError) {
       setError(apiError);
@@ -66,9 +77,108 @@ export function LearningMapProvider({ children }) {
     }
   }, []);
 
+  const refreshPremiumStatus = useCallback(async (accountOverride) => {
+    const account = accountOverride || getStoredPremiumAccount();
+
+    if (!account?.userId) {
+      setPremiumStatus(null);
+      return null;
+    }
+
+    try {
+      const nextStatus = await getPremiumStatus(account.userId);
+      setPremiumAccount(account);
+      setPremiumStatus(nextStatus);
+      setPremiumError(null);
+      return nextStatus;
+    } catch (apiError) {
+      setPremiumError(apiError);
+      return null;
+    }
+  }, []);
+
+  const applyPremiumSession = useCallback((nextStatus, nextAccount) => {
+    if (nextAccount?.userId) {
+      savePremiumAccount(nextAccount);
+      setPremiumAccount(nextAccount);
+    }
+
+    if (nextStatus) {
+      setPremiumStatus(nextStatus);
+      setPremiumError(null);
+    }
+  }, []);
+
   useEffect(() => {
     loadIslands();
   }, [loadIslands]);
+
+  useEffect(() => {
+    const account = getStoredPremiumAccount();
+    if (account?.userId) {
+      setPremiumAccount(account);
+      refreshPremiumStatus(account);
+    }
+  }, [refreshPremiumStatus]);
+
+  useEffect(() => {
+    const handleAuthSessionChanged = (event) => {
+      if (event.detail?.session) {
+        return;
+      }
+
+      setPremiumAccount(null);
+      setPremiumStatus(null);
+      setPremiumError(null);
+    };
+
+    window.addEventListener(AUTH_SESSION_CHANGED_EVENT, handleAuthSessionChanged);
+    return () => {
+      window.removeEventListener(AUTH_SESSION_CHANGED_EVENT, handleAuthSessionChanged);
+    };
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paymentState = params.get("premiumPayment");
+    const orderCode = params.get("orderCode");
+    const premiumUserId = Number(params.get("premiumUserId") || premiumAccount?.userId || 0);
+
+    if (paymentState !== "success" || !orderCode || !premiumUserId) {
+      return;
+    }
+
+    let ignore = false;
+    confirmPremiumPayment({ orderCode, userId: premiumUserId })
+      .then((nextStatus) => {
+        if (!ignore) {
+          setPremiumStatus(nextStatus);
+          setPremiumError(null);
+        }
+      })
+      .catch((apiError) => {
+        if (!ignore) {
+          setPremiumError(apiError);
+        }
+      })
+      .finally(() => {
+        if (!ignore) {
+          params.delete("premiumPayment");
+          params.delete("orderCode");
+          params.delete("premiumUserId");
+          const nextSearch = params.toString();
+          window.history.replaceState(
+            {},
+            "",
+            `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}`,
+          );
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [premiumAccount?.userId]);
 
   useEffect(() => {
     if (selectedIslandId) {
@@ -82,12 +192,15 @@ export function LearningMapProvider({ children }) {
   );
 
   const selectedSituations = useMemo(
-    () =>
-      selectedIsland
+    () => {
+      const sourceSituations = selectedIsland
         ? situationsByIslandId[selectedIsland.islandId] ||
           findStaticSituations(selectedIsland.islandId)
-        : [],
-    [selectedIsland, situationsByIslandId],
+        : [];
+
+      return applySituationAccess(sourceSituations, hasPremium);
+    },
+    [hasPremium, selectedIsland, situationsByIslandId],
   );
 
   const currentLesson = useMemo(
@@ -103,6 +216,11 @@ export function LearningMapProvider({ children }) {
       currentLesson,
       error,
       islands,
+      premiumAccount,
+      premiumError,
+      premiumStatus,
+      refreshPremiumStatus,
+      applyPremiumSession,
       retry: loadIslands,
       selectedIsland,
       selectedIslandId,
@@ -115,6 +233,11 @@ export function LearningMapProvider({ children }) {
       error,
       islands,
       loadIslands,
+      premiumAccount,
+      premiumError,
+      premiumStatus,
+      refreshPremiumStatus,
+      applyPremiumSession,
       selectedIsland,
       selectedIslandId,
       selectedSituations,
@@ -153,17 +276,25 @@ function enrichIslands(apiIslands) {
   }));
 }
 
-function enrichSituations(apiSituations) {
+function normalizeSituations(apiSituations) {
   if (!Array.isArray(apiSituations)) {
     return [];
   }
 
-  return apiSituations.map((situation, index) => ({
-    ...situation,
-    state: index === 0 ? "current" : "locked",
-  }));
+  return apiSituations;
 }
 
 function findStaticSituations(islandId) {
   return learningIslands.find((island) => island.islandId === islandId)?.situations || [];
+}
+
+function applySituationAccess(situations, hasPremium) {
+  if (!Array.isArray(situations)) {
+    return [];
+  }
+
+  return situations.map((situation, index) => ({
+    ...situation,
+    state: index === 0 ? "current" : hasPremium ? "open" : "locked",
+  }));
 }

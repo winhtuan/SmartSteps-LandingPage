@@ -22,6 +22,10 @@ import mascotSpeaking from "../../../assets/images/mascot/mascot-cat-speaking.pn
 import mascotSulking from "../../../assets/images/mascot/mascot-cat-sulking.png";
 import { Brand } from "../../../components/ui/Brand";
 import { ButtonLink } from "../../../components/ui/ButtonLink";
+import { AuthSidebar } from "../../auth/components/AuthSidebar";
+import { isAuthenticated } from "../../auth/services/authApi";
+import { getPreferredLanguage } from "../../landing/services/languagePreference";
+import { PremiumUpgradeModal } from "../../premium/components/PremiumUpgradeModal";
 import { learnerProfile, learningStats } from "../data/learningMapContent";
 import { LearningMapProvider, useLearningMap } from "../providers/LearningMapProvider";
 
@@ -72,6 +76,8 @@ function LearningMapView() {
     currentLesson,
     error,
     islands,
+    applyPremiumSession,
+    premiumStatus,
     retry,
     selectedIsland,
     selectedIslandId,
@@ -80,6 +86,11 @@ function LearningMapView() {
     status,
   } = useLearningMap();
   const [collapsedIslandIds, setCollapsedIslandIds] = useState([]);
+  const [authMode, setAuthMode] = useState("signin");
+  const [authOpen, setAuthOpen] = useState(false);
+  const [pendingPremiumLesson, setPendingPremiumLesson] = useState(null);
+  const [premiumLesson, setPremiumLesson] = useState(null);
+  const language = getPreferredLanguage();
 
   const handleSelectIsland = (islandId) => {
     const selectedIndex = islands.findIndex((island) => island.islandId === islandId);
@@ -88,6 +99,19 @@ function LearningMapView() {
       selectedIndex > 0 ? islands.slice(0, selectedIndex).map((island) => island.islandId) : [],
     );
     setSelectedIslandId(islandId);
+  };
+
+  const handleOpenPremium = (lesson) => {
+    const nextLesson = lesson || currentLesson || selectedSituations[0] || null;
+
+    if (!isAuthenticated()) {
+      setPendingPremiumLesson(nextLesson);
+      setAuthMode("signin");
+      setAuthOpen(true);
+      return;
+    }
+
+    setPremiumLesson(nextLesson);
   };
 
   return (
@@ -103,6 +127,7 @@ function LearningMapView() {
                 collapsedIslandIds={collapsedIslandIds}
                 islands={islands}
                 onSelect={handleSelectIsland}
+                onLockedLessonSelect={handleOpenPremium}
                 selectedIslandId={selectedIslandId}
                 selectedSituations={selectedSituations}
               />
@@ -112,6 +137,31 @@ function LearningMapView() {
         </div>
       </main>
       <LearningBottomNav />
+      <AuthSidebar
+        language={language}
+        mode={authMode}
+        open={authOpen}
+        onAuthenticated={() => {
+          setAuthOpen(false);
+          setPremiumLesson(pendingPremiumLesson || currentLesson || selectedSituations[0] || null);
+          setPendingPremiumLesson(null);
+        }}
+        onClose={() => {
+          setAuthOpen(false);
+          setPendingPremiumLesson(null);
+        }}
+        onModeChange={setAuthMode}
+      />
+      <PremiumUpgradeModal
+        lesson={premiumLesson}
+        onClose={() => setPremiumLesson(null)}
+        onPremiumChanged={(nextStatus, nextAccount) => {
+          applyPremiumSession(nextStatus, nextAccount);
+          setPremiumLesson(null);
+        }}
+        open={Boolean(premiumLesson)}
+        premiumStatus={premiumStatus}
+      />
     </div>
   );
 }
@@ -211,7 +261,14 @@ function LearningSidebar() {
   );
 }
 
-function IslandPath({ active, className = "mt-8", id, islandIndex, lessons }) {
+function IslandPath({
+  active,
+  className = "mt-8",
+  id,
+  islandIndex,
+  lessons,
+  onLockedLessonSelect,
+}) {
   if (lessons.length === 0) {
     return (
       <div className="mt-8 rounded-3xl border border-yellow-100 bg-white p-6 text-center text-sm font-bold text-slate-600">
@@ -237,6 +294,7 @@ function IslandPath({ active, className = "mt-8", id, islandIndex, lessons }) {
             index={index}
             key={item.lesson.situationId}
             lesson={item.lesson}
+            onLockedLessonSelect={onLockedLessonSelect}
             pathDirection={pathDirection}
             totalItems={pathItems.length}
           />
@@ -304,7 +362,7 @@ function MascotDecoration({ active, direction, islandIndex }) {
   );
 }
 
-function LessonNode({ lesson, index, pathDirection, totalItems }) {
+function LessonNode({ lesson, index, onLockedLessonSelect, pathDirection, totalItems }) {
   const Icon = stateIcon[lesson.state] || BookOpen;
   const locked = lesson.state === "locked";
   const current = lesson.state === "current";
@@ -322,6 +380,11 @@ function LessonNode({ lesson, index, pathDirection, totalItems }) {
     >
       <button
         type="button"
+        onClick={() => {
+          if (locked) {
+            onLockedLessonSelect?.(lesson);
+          }
+        }}
         aria-label={
           locked
             ? `Bài ${lesson.orderIndex} Khóa`
@@ -473,6 +536,7 @@ function LearningInsightPanel({ island, lesson }) {
 function IslandRoadmap({
   collapsedIslandIds,
   islands,
+  onLockedLessonSelect,
   onSelect,
   selectedIslandId,
   selectedSituations,
@@ -597,6 +661,7 @@ function IslandRoadmap({
                   island={island}
                   islandName={islandName}
                   islandIndex={index}
+                  onLockedLessonSelect={onLockedLessonSelect}
                   onSelect={onSelect}
                 />
               </article>
@@ -621,6 +686,7 @@ function IslandRoadmap({
                 id={index === 0 ? "learning-path" : undefined}
                 islandIndex={index}
                 lessons={lessons}
+                onLockedLessonSelect={onLockedLessonSelect}
               />
             </article>
           );
@@ -698,7 +764,13 @@ function CollapsedIslandSummary({ island, islandIndex, islandName, lessonCount, 
   );
 }
 
-function LockedIslandPreview({ island, islandIndex, islandName, onSelect }) {
+function LockedIslandPreview({
+  island,
+  islandIndex,
+  islandName,
+  onLockedLessonSelect,
+  onSelect,
+}) {
   const pathDirection = getPathDirection(islandIndex);
   const lockedItems = ["skip", "lock", "chest", "lock", "reward"];
 
@@ -718,7 +790,15 @@ function LockedIslandPreview({ island, islandIndex, islandName, onSelect }) {
             index={index}
             islandName={islandName}
             key={`${item}-${index}`}
-            onSelect={() => onSelect(island.islandId)}
+            onSelect={() =>
+              item === "skip"
+                ? onLockedLessonSelect?.({
+                    islandId: island.islandId,
+                    orderIndex: island.orderIndex,
+                    title: islandName,
+                  })
+                : onSelect(island.islandId)
+            }
             pathDirection={pathDirection}
             totalItems={lockedItems.length}
             type={item}
