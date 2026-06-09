@@ -1,7 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import App from './App';
+import App from './app/App';
 
 beforeEach(() => {
+  window.history.pushState({}, '', '/');
   localStorage.clear();
 });
 
@@ -17,6 +18,14 @@ test('renders the SmartSteps landing page', () => {
   expect(
     screen.getByRole('heading', { name: /rèn kỹ năng sống cho trẻ qua từng bước vui học/i })
   ).toBeInTheDocument();
+});
+
+test('links the landing start CTA to the learning map', () => {
+  render(<App />);
+  expect(screen.getAllByRole('link', { name: /học miễn phí/i })[0]).toHaveAttribute(
+    'href',
+    '/learning'
+  );
 });
 
 test('switches to English for the current page session', () => {
@@ -55,4 +64,33 @@ test('switches from sign in to the sign up form', () => {
   expect(screen.getByLabelText('Tên phụ huynh')).toBeInTheDocument();
   expect(screen.getByLabelText('Xác nhận mật khẩu')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Tạo tài khoản' })).toBeInTheDocument();
+});
+
+test('renders the learning map route', () => {
+  window.history.pushState({}, '', '/learning');
+  render(<App />);
+  expect(
+    screen.getByRole('button', { name: /đảo 1 an toàn cá nhân đang học/i })
+  ).toBeInTheDocument();
+  expect(screen.queryByText('Học hôm nay')).not.toBeInTheDocument();
+  expect(screen.getByText('Minh Tuấn')).toBeInTheDocument();
+  expect(screen.getByText('Level 1')).toBeInTheDocument();
+  expect(screen.getByText('0 ngày')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /bài 1 vật tròn lấp lánh bắt đầu/i })).toBeInTheDocument();
+  expect(screen.queryByRole('heading', { name: 'Chọn chủ đề khác' })).not.toBeInTheDocument();
+});
+
+test('opens the learning tip from the mascot button', () => {
+  window.history.pushState({}, '', '/learning');
+  render(<App />);
+
+  const tipButton = screen.getByRole('button', { name: 'Mở gợi ý cho bé' });
+  expect(tipButton).toHaveAttribute('aria-expanded', 'false');
+
+  fireEvent.click(tipButton);
+
+  expect(screen.getByRole('button', { name: 'Ẩn gợi ý cho bé' })).toHaveAttribute(
+    'aria-expanded',
+    'true'
+  );
 });
