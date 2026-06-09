@@ -15,15 +15,19 @@ export function LandingView() {
         language={language}
         setLanguage={setLanguage}
         loginLabel={copy.login}
+        logoutLabel={copy.logout}
+        authenticated={auth.authenticated}
         ctaLabel={copy.getStarted}
         openMenuLabel={copy.openMenu}
         closeMenuLabel={copy.closeMenu}
         onLogin={auth.openSignIn}
+        onLogout={auth.logout}
       />
       <AuthSidebar
         language={language}
         mode={auth.mode}
         open={auth.isOpen}
+        onAuthenticated={auth.handleAuthenticated}
         onClose={auth.close}
         onModeChange={auth.setMode}
       />

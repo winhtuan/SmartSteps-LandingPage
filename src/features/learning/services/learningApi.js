@@ -1,4 +1,4 @@
-const DEFAULT_API_BASE_URL = "http://localhost:5078";
+const DEFAULT_API_BASE_URL = "https://localhost:7289";
 
 export const smartStepsApiBaseUrl = normalizeBaseUrl(
   process.env.REACT_APP_SMARTSTEPS_API_BASE_URL || DEFAULT_API_BASE_URL

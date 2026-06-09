@@ -2,13 +2,16 @@ import { createContext, useCallback, useContext, useMemo, useState } from "react
 import { navHrefs } from "../data/landingContent";
 import { translations } from "../data/translations";
 import { useLandingSeo } from "../hooks/useLandingSeo";
+import { getPreferredLanguage, savePreferredLanguage } from "../services/languagePreference";
+import { isAuthenticated, logout } from "../../auth/services/authApi";
 
 const LandingContext = createContext(null);
 
 export function LandingProvider({ children }) {
-  const [language, setLanguage] = useState("vi");
+  const [language, setLanguageState] = useState(() => getPreferredLanguage());
   const [authMode, setAuthMode] = useState("signin");
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authenticated, setAuthenticated] = useState(() => isAuthenticated());
   const copy = translations[language] || translations.en;
 
   useLandingSeo(language);
@@ -22,12 +25,28 @@ export function LandingProvider({ children }) {
     setIsAuthOpen(false);
   }, []);
 
+  const handleAuthenticated = useCallback(() => {
+    setAuthenticated(true);
+  }, []);
+
+  const handleLogout = useCallback(() => {
+    logout();
+    setAuthenticated(false);
+  }, []);
+
+  const setLanguage = useCallback((nextLanguage) => {
+    setLanguageState(savePreferredLanguage(nextLanguage));
+  }, []);
+
   const value = useMemo(
     () => ({
       auth: {
         isOpen: isAuthOpen,
         mode: authMode,
         close: closeAuth,
+        authenticated,
+        handleAuthenticated,
+        logout: handleLogout,
         openSignIn,
         setMode: setAuthMode,
       },
@@ -36,7 +55,18 @@ export function LandingProvider({ children }) {
       navHrefs,
       setLanguage,
     }),
-    [authMode, closeAuth, copy, isAuthOpen, language, openSignIn],
+    [
+      authMode,
+      authenticated,
+      closeAuth,
+      copy,
+      handleAuthenticated,
+      handleLogout,
+      isAuthOpen,
+      language,
+      openSignIn,
+      setLanguage,
+    ],
   );
 
   return (

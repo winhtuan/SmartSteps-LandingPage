@@ -6,10 +6,24 @@ import {
   GoogleBrandIcon,
 } from "../../../components/ui/SocialBrandIcons";
 import { authTranslations } from "../../landing/data/translations";
+import { login } from "../services/authApi";
 
-export function AuthSidebar({ language, mode, open, onClose, onModeChange }) {
+export function AuthSidebar({ language, mode, open, onAuthenticated, onClose, onModeChange }) {
   const t = authTranslations[language] || authTranslations.en;
   const isSignup = mode === "signup";
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
+    const session = await login({
+      email: formData.get("email"),
+      parentName: formData.get("parentName"),
+    });
+
+    onAuthenticated?.(session);
+    onClose();
+  };
 
   useEffect(() => {
     if (!open) return undefined;
@@ -76,7 +90,7 @@ export function AuthSidebar({ language, mode, open, onClose, onModeChange }) {
         </div>
         <form
           className="mt-8 space-y-5"
-          onSubmit={(event) => event.preventDefault()}
+          onSubmit={handleSubmit}
         >
           {isSignup && (
             <label className="block">

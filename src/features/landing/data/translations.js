@@ -8,6 +8,7 @@ export const translations = {
       "Plans & Pricing",
     ],
     login: "Sign In",
+    logout: "Logout",
     getStarted: "Get Started",
     openMenu: "Open menu",
     closeMenu: "Close menu",
@@ -231,6 +232,7 @@ export const translations = {
   vi: {
     nav: ["Giới thiệu", "Khám phá", "Cách học", "Phụ huynh", "Học phí"],
     login: "Đăng nhập",
+    logout: "Đăng xuất",
     getStarted: "Bắt đầu",
     openMenu: "Mở menu",
     closeMenu: "Đóng menu",
