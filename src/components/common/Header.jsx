@@ -17,8 +17,16 @@ export function Header({
   closeMenuLabel,
   onLogin,
   onLogout,
+  onStart,
 }) {
   const [open, setOpen] = useState(false);
+  const startHref = "/learning";
+  const handleStartClick = authenticated
+    ? undefined
+    : (event) => {
+        event.preventDefault();
+        onStart?.();
+      };
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-yellow-100 bg-[#fffdf7]/95 backdrop-blur-lg">
@@ -43,7 +51,7 @@ export function Header({
           >
             {authenticated ? logoutLabel : loginLabel}
           </button>
-          <ButtonLink href="/learning" className="min-h-10 px-5 py-2">
+          <ButtonLink href={startHref} onClick={handleStartClick} className="min-h-10 px-5 py-2">
             {ctaLabel}
           </ButtonLink>
         </div>
@@ -93,7 +101,7 @@ export function Header({
           >
             {authenticated ? logoutLabel : loginLabel}
           </button>
-          <ButtonLink href="/learning" className="mt-3 w-full md:w-auto md:px-8">
+          <ButtonLink href={startHref} onClick={handleStartClick} className="mt-3 w-full md:w-auto md:px-8">
             {ctaLabel}
           </ButtonLink>
         </div>

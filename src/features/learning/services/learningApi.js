@@ -1,4 +1,7 @@
-const DEFAULT_API_BASE_URL = "https://localhost:7289";
+const DEFAULT_API_BASE_URL =
+  window.location.protocol === "https:"
+    ? "https://localhost:7289"
+    : "http://localhost:5078";
 
 export const smartStepsApiBaseUrl = normalizeBaseUrl(
   process.env.REACT_APP_SMARTSTEPS_API_BASE_URL || DEFAULT_API_BASE_URL
@@ -61,6 +64,30 @@ export function createSignedVoiceUrl(mediaUrl, accessToken) {
     method: "POST",
     accessToken,
     body: { mediaUrl },
+  });
+}
+
+/**
+ * @param {{ userEmail: string }} params
+ * @returns {Promise<import("../types/learning.type").LearningProgress>}
+ */
+export function getUserLearningProgress({ userEmail }) {
+  const normalizedEmail = String(userEmail || "").trim().toLowerCase();
+  return requestJson(`/api/progress?userEmail=${encodeURIComponent(normalizedEmail)}`);
+}
+
+/**
+ * @param {{ fullName?: string, situationId: number, userEmail: string }} params
+ * @returns {Promise<import("../types/learning.type").CompleteSituationProgressResponse>}
+ */
+export function completeSituationProgress({ fullName, situationId, userEmail }) {
+  return requestJson("/api/progress/complete", {
+    method: "POST",
+    body: {
+      fullName: fullName || undefined,
+      situationId,
+      userEmail,
+    },
   });
 }
 

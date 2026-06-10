@@ -3,3 +3,15 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+Object.defineProperty(HTMLMediaElement.prototype, "load", {
+  configurable: true,
+  writable: true,
+  value: jest.fn(),
+});
+
+Object.defineProperty(HTMLMediaElement.prototype, "play", {
+  configurable: true,
+  writable: true,
+  value: jest.fn(() => Promise.resolve()),
+});

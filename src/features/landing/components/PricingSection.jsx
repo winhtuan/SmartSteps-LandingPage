@@ -47,10 +47,26 @@ function BillingToggle({ labels, value, onChange }) {
   );
 }
 
-function PricingCard({ plan, planIcon, billingCycle, pricingLabels, onBillingCycleChange }) {
+function PricingCard({
+  plan,
+  planIcon,
+  billingCycle,
+  pricingLabels,
+  onBillingCycleChange,
+  authenticated,
+  onStart,
+}) {
   const [price, billing] = plan.pricing
     ? plan.pricing[billingCycle]
     : [plan.price, plan.billing];
+  const ctaHref = plan.paid ? "#pricing" : "/learning";
+  const handleCtaClick =
+    plan.paid || authenticated
+      ? undefined
+      : (event) => {
+          event.preventDefault();
+          onStart?.();
+        };
 
   return (
     <article
@@ -87,7 +103,8 @@ function PricingCard({ plan, planIcon, billingCycle, pricingLabels, onBillingCyc
       </p>
 
       <ButtonLink
-        href={plan.paid ? "#pricing" : "/learning"}
+        href={ctaHref}
+        onClick={handleCtaClick}
         tone={plan.paid ? "yellow" : "outline"}
         className="mt-5 w-full"
       >
@@ -113,7 +130,7 @@ function PricingCard({ plan, planIcon, billingCycle, pricingLabels, onBillingCyc
   );
 }
 
-export function PricingSection({ t }) {
+export function PricingSection({ t, authenticated = false, onStart }) {
   const [billingCycle, setBillingCycle] = useState("yearly");
   const pricing = t.pricing;
 
@@ -133,6 +150,8 @@ export function PricingSection({ t }) {
               billingCycle={billingCycle}
               pricingLabels={pricing}
               onBillingCycleChange={setBillingCycle}
+              authenticated={authenticated}
+              onStart={onStart}
             />
           ))}
         </div>

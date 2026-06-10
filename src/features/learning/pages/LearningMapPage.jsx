@@ -12,7 +12,6 @@ import {
   MapTrifold,
   Medal,
   Play,
-  Trophy,
   UserCircle,
 } from "@phosphor-icons/react";
 import mascotConfident from "../../../assets/images/mascot/mascot-cat-confident.png";
@@ -20,6 +19,7 @@ import mascotHappy from "../../../assets/images/mascot/mascot-cat-happy-wave.png
 import mascotSinging from "../../../assets/images/mascot/mascot-cat-singing.png";
 import mascotSpeaking from "../../../assets/images/mascot/mascot-cat-speaking.png";
 import mascotSulking from "../../../assets/images/mascot/mascot-cat-sulking.png";
+import planProIcon from "../../../assets/icons/pricing/plan-pro.svg";
 import { Brand } from "../../../components/ui/Brand";
 import { ButtonLink } from "../../../components/ui/ButtonLink";
 import { AuthSidebar } from "../../auth/components/AuthSidebar";
@@ -34,13 +34,6 @@ const navItems = [
   { label: "Các đảo", Icon: MapTrifold, active: false },
   { label: "Ôn tập", Icon: BookOpen, active: false },
   { label: "Hồ sơ", Icon: UserCircle, active: false },
-];
-
-const bottomNavItems = [
-  navItems[0],
-  { label: "Xếp hạng", Icon: Trophy, active: false },
-  navItems[2],
-  navItems[3],
 ];
 
 const stateIcon = {
@@ -136,7 +129,6 @@ function LearningMapView() {
           <LearningInsightPanel island={selectedIsland} lesson={currentLesson} />
         </div>
       </main>
-      <LearningBottomNav />
       <AuthSidebar
         language={language}
         mode={authMode}
@@ -365,6 +357,7 @@ function MascotDecoration({ active, direction, islandIndex }) {
 function LessonNode({ lesson, index, onLockedLessonSelect, pathDirection, totalItems }) {
   const Icon = stateIcon[lesson.state] || BookOpen;
   const locked = lesson.state === "locked";
+  const premiumLocked = lesson.state === "premium_locked";
   const current = lesson.state === "current";
   const position = getPathPosition(pathDirection, index, totalItems);
   const displayTitle = getLessonDisplayTitle(lesson);
@@ -381,9 +374,16 @@ function LessonNode({ lesson, index, onLockedLessonSelect, pathDirection, totalI
       <button
         type="button"
         onClick={() => {
-          if (locked) {
+          if (premiumLocked) {
             onLockedLessonSelect?.(lesson);
+            return;
           }
+
+          if (locked) {
+            return;
+          }
+
+          openLesson(lesson);
         }}
         aria-label={
           locked
@@ -393,15 +393,21 @@ function LessonNode({ lesson, index, onLockedLessonSelect, pathDirection, totalI
         className={`group relative mx-auto flex h-[5.25rem] w-[5.25rem] items-center justify-center rounded-full border-[6px] border-white text-left shadow-[0_8px_0_#dceacb] transition duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-green-200 focus-visible:ring-offset-4 ${
           current
             ? "learning-action-node learning-action-node--start bg-yellow-400 text-slate-950 shadow-[0_8px_0_#c99d00] hover:bg-yellow-300"
-            : locked
+            : premiumLocked
+              ? "bg-violet-100 text-violet-700 shadow-[0_8px_0_#d9c8ff] hover:bg-violet-50"
+              : locked
               ? "bg-slate-100 text-slate-400"
               : "bg-green-100 text-green-700"
         }`}
       >
         {current ? <LearningActionCallout label="Bắt đầu học" tone="start" /> : null}
-        <Icon size={34} weight={current ? "fill" : "duotone"} />
+        {premiumLocked ? (
+          <img src={planProIcon} alt="" aria-hidden="true" className="h-9 w-9 object-contain" />
+        ) : (
+          <Icon size={34} weight={current ? "fill" : "duotone"} />
+        )}
       </button>
-      {current ? (
+      {current || premiumLocked ? (
         <LessonLabel
           lesson={lesson}
           side={position.x > 50 ? "left" : "right"}
@@ -899,6 +905,14 @@ function getLessonDisplayTitle(lesson) {
   return normalizedTitle || title;
 }
 
+function openLesson(lesson) {
+  if (!lesson?.situationId) {
+    return;
+  }
+
+  window.location.assign(`/lesson/${encodeURIComponent(lesson.situationId)}`);
+}
+
 function getIslandDisplayName(island) {
   if (!island) {
     return "";
@@ -926,23 +940,4 @@ function StatCard({ label, value, tone }) {
   );
 }
 
-function LearningBottomNav() {
-  return (
-    <nav className="fixed inset-x-3 bottom-3 z-40 rounded-full border border-yellow-100 bg-white/95 p-2 shadow-soft backdrop-blur xl:hidden">
-      <div className="grid grid-cols-4 gap-1">
-        {bottomNavItems.map(({ label, Icon, active }) => (
-          <button
-            key={label}
-            type="button"
-            className={`flex flex-col items-center gap-1 rounded-full px-2 py-2 text-[11px] font-extrabold ${
-              active ? "bg-green-100 text-green-700" : "text-slate-500"
-            }`}
-          >
-            <Icon size={20} weight={active ? "fill" : "duotone"} />
-            {label}
-          </button>
-        ))}
-      </div>
-    </nav>
-  );
-}
+

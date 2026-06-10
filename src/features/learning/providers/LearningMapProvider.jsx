@@ -6,15 +6,17 @@ import {
   useMemo,
   useState,
 } from "react";
-import { getIslandSituations, getIslands } from "../services/learningApi";
+import { getAuthSession, AUTH_SESSION_CHANGED_EVENT } from "../../auth/services/authApi";
+import { getIslandSituations, getIslands, getUserLearningProgress } from "../services/learningApi";
 import { learningIslands } from "../data/learningMapContent";
+import { getSituationPresentationOverride } from "../../lesson/data/lessonContent";
 import {
   confirmPremiumPayment,
   getPremiumStatus,
   getStoredPremiumAccount,
   savePremiumAccount,
 } from "../../premium/services/premiumApi";
-import { AUTH_SESSION_CHANGED_EVENT } from "../../auth/services/authApi";
+import { getCompletedSituationIds } from "../services/learningProgress";
 
 const islandTones = [
   "bg-green-100 text-green-700",
@@ -33,6 +35,7 @@ export function LearningMapProvider({ children }) {
   const [premiumAccount, setPremiumAccount] = useState(() => getStoredPremiumAccount());
   const [premiumStatus, setPremiumStatus] = useState(null);
   const [premiumError, setPremiumError] = useState(null);
+  const [completedSituationIds, setCompletedSituationIds] = useState(() => getCompletedSituationIds());
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
   const hasPremium = premiumStatus?.hasPremium === true;
@@ -77,6 +80,22 @@ export function LearningMapProvider({ children }) {
     }
   }, []);
 
+  const loadLearningProgress = useCallback(async (accountOverride) => {
+    const account = accountOverride || getAuthSession();
+
+    if (!account?.email) {
+      setCompletedSituationIds(getCompletedSituationIds());
+      return;
+    }
+
+    try {
+      const progress = await getUserLearningProgress({ userEmail: account.email });
+      setCompletedSituationIds(normalizeCompletedSituationIds(progress?.completedSituationIds));
+    } catch {
+      setCompletedSituationIds(getCompletedSituationIds());
+    }
+  }, []);
+
   const refreshPremiumStatus = useCallback(async (accountOverride) => {
     const account = accountOverride || getStoredPremiumAccount();
 
@@ -114,6 +133,10 @@ export function LearningMapProvider({ children }) {
   }, [loadIslands]);
 
   useEffect(() => {
+    loadLearningProgress();
+  }, [loadLearningProgress]);
+
+  useEffect(() => {
     const account = getStoredPremiumAccount();
     if (account?.userId) {
       setPremiumAccount(account);
@@ -124,19 +147,21 @@ export function LearningMapProvider({ children }) {
   useEffect(() => {
     const handleAuthSessionChanged = (event) => {
       if (event.detail?.session) {
+        loadLearningProgress(event.detail.session);
         return;
       }
 
       setPremiumAccount(null);
       setPremiumStatus(null);
       setPremiumError(null);
+      setCompletedSituationIds(getCompletedSituationIds());
     };
 
     window.addEventListener(AUTH_SESSION_CHANGED_EVENT, handleAuthSessionChanged);
     return () => {
       window.removeEventListener(AUTH_SESSION_CHANGED_EVENT, handleAuthSessionChanged);
     };
-  }, []);
+  }, [loadLearningProgress]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -198,14 +223,15 @@ export function LearningMapProvider({ children }) {
           findStaticSituations(selectedIsland.islandId)
         : [];
 
-      return applySituationAccess(sourceSituations, hasPremium);
+      return applySituationAccess(sourceSituations, hasPremium, completedSituationIds);
     },
-    [hasPremium, selectedIsland, situationsByIslandId],
+    [completedSituationIds, hasPremium, selectedIsland, situationsByIslandId],
   );
 
   const currentLesson = useMemo(
     () =>
       selectedSituations.find((situation) => situation.state === "current") ||
+      selectedSituations.find((situation) => situation.state === "premium_locked") ||
       selectedSituations[0] ||
       null,
     [selectedSituations],
@@ -281,20 +307,101 @@ function normalizeSituations(apiSituations) {
     return [];
   }
 
-  return apiSituations;
+  return apiSituations.map((situation) => applySituationPresentationOverride(situation));
 }
 
 function findStaticSituations(islandId) {
-  return learningIslands.find((island) => island.islandId === islandId)?.situations || [];
+  return (
+    learningIslands.find((island) => island.islandId === islandId)?.situations.map((situation) =>
+      applySituationPresentationOverride(situation),
+    ) || []
+  );
 }
 
-function applySituationAccess(situations, hasPremium) {
+function applySituationAccess(situations, hasPremium, completedSituationIds) {
   if (!Array.isArray(situations)) {
     return [];
   }
 
-  return situations.map((situation, index) => ({
+  const completedSituationIdSet = new Set(normalizeCompletedSituationIds(completedSituationIds));
+  const contiguousCompletedCount = getContiguousCompletedCount(situations, completedSituationIdSet);
+  const firstIncompleteIndex = situations.findIndex(
+    (situation) => !completedSituationIdSet.has(Number(situation.situationId)),
+  );
+
+  return situations.map((situation, index) => {
+    const completed = completedSituationIdSet.has(Number(situation.situationId));
+    const requiresPremium = doesSituationRequirePremium(situation);
+    const unlockedByProgress = index <= contiguousCompletedCount;
+    const unlocked = unlockedByProgress && (!requiresPremium || hasPremium);
+    const current =
+      !completed &&
+      unlocked &&
+      (firstIncompleteIndex === -1 ? index === situations.length - 1 : index === firstIncompleteIndex);
+    const premiumLocked =
+      !completed &&
+      requiresPremium &&
+      !hasPremium &&
+      unlockedByProgress &&
+      (firstIncompleteIndex === -1 ? index === situations.length - 1 : index === firstIncompleteIndex);
+
+    return {
+      ...situation,
+      state: completed
+        ? "open"
+        : current
+          ? "current"
+          : premiumLocked
+            ? "premium_locked"
+            : unlocked
+              ? "open"
+              : "locked",
+    };
+  });
+}
+
+function getContiguousCompletedCount(situations, completedSituationIds) {
+  let count = 0;
+
+  for (const situation of situations) {
+    if (!completedSituationIds.has(Number(situation.situationId))) {
+      break;
+    }
+
+    count += 1;
+  }
+
+  return count;
+}
+
+function normalizeCompletedSituationIds(values) {
+  if (!Array.isArray(values)) {
+    return [];
+  }
+
+  return values
+    .map((value) => Number(value))
+    .filter(
+      (value, index, source) =>
+        Number.isInteger(value) && value > 0 && source.indexOf(value) === index,
+    )
+    .sort((left, right) => left - right);
+}
+
+function applySituationPresentationOverride(situation) {
+  const override = getSituationPresentationOverride(situation?.situationId);
+
+  if (!override) {
+    return situation;
+  }
+
+  return {
     ...situation,
-    state: index === 0 ? "current" : hasPremium ? "open" : "locked",
-  }));
+    intro: override.intro || situation.intro,
+    title: override.title || situation.title,
+  };
+}
+
+function doesSituationRequirePremium(situation) {
+  return Number(situation?.situationId) === 3;
 }

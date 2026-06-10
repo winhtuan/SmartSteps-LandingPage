@@ -22,6 +22,7 @@ export function LandingView() {
         closeMenuLabel={copy.closeMenu}
         onLogin={auth.openSignIn}
         onLogout={auth.logout}
+        onStart={auth.openSignIn}
       />
       <AuthSidebar
         language={language}
@@ -30,8 +31,14 @@ export function LandingView() {
         onAuthenticated={auth.handleAuthenticated}
         onClose={auth.close}
         onModeChange={auth.setMode}
+        redirectPath="/learning"
       />
-      <LandingSections t={copy} language={language} />
+      <LandingSections
+        t={copy}
+        language={language}
+        authenticated={auth.authenticated}
+        onStart={auth.openSignIn}
+      />
       <Footer t={copy} />
     </div>
   );

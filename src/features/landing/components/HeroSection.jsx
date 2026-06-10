@@ -1,7 +1,15 @@
 import { ArrowRight, Lightning, Medal, Play, Sparkle } from "@phosphor-icons/react";
 import heroImage from "../../../assets/images/hero-img.png";
 import { ButtonLink } from "../../../components/ui/ButtonLink";
-export function HeroSection({ t }) {
+export function HeroSection({ t, authenticated = false, onStart }) {
+  const startHref = "/learning";
+  const handleStartClick = authenticated
+    ? undefined
+    : (event) => {
+        event.preventDefault();
+        onStart?.();
+      };
+
   const floatingCards = [
     {
       title: t.skill,
@@ -47,7 +55,8 @@ export function HeroSection({ t }) {
           </p>
           <div className="fade-up animation-delay-2 mt-8 flex w-full flex-col justify-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
             <ButtonLink
-              href="/learning"
+              href={startHref}
+              onClick={handleStartClick}
               className="w-full px-6 py-4 text-base sm:w-auto sm:px-8"
             >
               {t.primary} <ArrowRight size={18} weight="bold" />

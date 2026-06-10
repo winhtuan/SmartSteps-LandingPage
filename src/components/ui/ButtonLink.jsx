@@ -9,12 +9,14 @@ const BUTTON_LINK_STYLES = {
 export function ButtonLink({
   children,
   href = "#pricing",
+  onClick,
   tone = "yellow",
   className = "",
 }) {
   return (
     <a
       href={href}
+      onClick={onClick}
       className={`tactile-button inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-extrabold tracking-tight transition ${BUTTON_LINK_STYLES[tone]} ${className}`}
     >
       {children}

@@ -8,21 +8,53 @@ import {
 import { authTranslations } from "../../landing/data/translations";
 import { login } from "../services/authApi";
 
-export function AuthSidebar({ language, mode, open, onAuthenticated, onClose, onModeChange }) {
+const DEMO_ACCOUNT = {
+  email: "demo@smartsteps.vn",
+  fullName: "SmartSteps Demo",
+  password: "123456",
+};
+
+export function AuthSidebar({
+  language,
+  mode,
+  open,
+  onAuthenticated,
+  onClose,
+  onModeChange,
+  redirectPath,
+}) {
   const t = authTranslations[language] || authTranslations.en;
   const isSignup = mode === "signup";
+
+  const finishLogin = async ({ email, parentName }) => {
+    const session = await login({
+      email,
+      parentName,
+    });
+
+    onAuthenticated?.(session);
+    onClose();
+
+    if (redirectPath) {
+      window.location.assign(redirectPath);
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
 
-    const session = await login({
+    await finishLogin({
       email: formData.get("email"),
       parentName: formData.get("parentName"),
     });
+  };
 
-    onAuthenticated?.(session);
-    onClose();
+  const handleDemoLogin = async () => {
+    await finishLogin({
+      email: DEMO_ACCOUNT.email,
+      parentName: DEMO_ACCOUNT.fullName,
+    });
   };
 
   useEffect(() => {
@@ -92,6 +124,28 @@ export function AuthSidebar({ language, mode, open, onAuthenticated, onClose, on
           className="mt-8 space-y-5"
           onSubmit={handleSubmit}
         >
+          {!isSignup && (
+            <div className="rounded-[1.35rem] border border-yellow-200 bg-yellow-50 px-4 py-4 text-sm text-slate-700">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-black text-slate-900">Tài khoản dùng thử</p>
+                  <p className="mt-1 font-semibold text-slate-600">
+                    Email: {DEMO_ACCOUNT.email}
+                  </p>
+                  <p className="font-semibold text-slate-600">
+                    Mật khẩu: {DEMO_ACCOUNT.password}
+                  </p>
+                </div>
+                <button
+                  className="shrink-0 rounded-full border border-yellow-300 bg-white px-4 py-2 text-xs font-black text-slate-900 transition hover:border-yellow-400 hover:bg-yellow-100"
+                  type="button"
+                  onClick={handleDemoLogin}
+                >
+                  Vào thử ngay
+                </button>
+              </div>
+            </div>
+          )}
           {isSignup && (
             <label className="block">
               <span className="text-sm font-extrabold text-slate-700">

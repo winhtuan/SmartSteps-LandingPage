@@ -3,9 +3,10 @@ import {
   CheckCircle,
   Crown,
   LockKey,
-  Sparkle,
   X,
 } from "@phosphor-icons/react";
+import freePlanIcon from "../../../assets/icons/pricing/plan-free.svg";
+import proPlanIcon from "../../../assets/icons/pricing/plan-pro.svg";
 import { Modal } from "../../../components/ui/Modal";
 import { getAuthSession } from "../../auth/services/authApi";
 import { getPreferredLanguage } from "../../landing/services/languagePreference";
@@ -438,11 +439,13 @@ function PremiumPlansStep({
 }
 
 function PremiumPlanCard({ copy, language, loading, onChoose, plan }) {
+  const planIcon = getPlanIcon(plan.planCode);
+
   return (
     <article className="flex min-h-[17rem] flex-col rounded-[1.25rem] border border-yellow-100 bg-white p-4 shadow-sm">
       <div className="flex items-center gap-3">
-        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-yellow-100 text-yellow-700">
-          <Sparkle size={22} weight="fill" />
+        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-yellow-100/70">
+          <img src={planIcon} alt="" aria-hidden="true" className="h-8 w-8 object-contain" />
         </span>
         <h3 className="text-lg font-black text-slate-950">{plan.name}</h3>
       </div>
@@ -527,4 +530,12 @@ function createMathChallenge() {
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getPlanIcon(planCode) {
+  if (planCode === "MAX_LIFETIME") {
+    return freePlanIcon;
+  }
+
+  return proPlanIcon;
 }

@@ -78,6 +78,36 @@
  */
 
 /**
+ * @typedef {Object} LearningProgressItem
+ * @property {number} islandId
+ * @property {number} situationId
+ * @property {number} currentStep
+ * @property {string} status
+ * @property {string | null | undefined} lastAccessedAt
+ * @property {string | null | undefined} updatedAt
+ */
+
+/**
+ * @typedef {Object} LearningProgress
+ * @property {number | null | undefined} userId
+ * @property {string} userEmail
+ * @property {number[]} completedSituationIds
+ * @property {LearningProgressItem[]} items
+ */
+
+/**
+ * @typedef {Object} CompleteSituationProgressResponse
+ * @property {number} progressId
+ * @property {number} userId
+ * @property {string} userEmail
+ * @property {number} islandId
+ * @property {number} situationId
+ * @property {number} currentStep
+ * @property {string} status
+ * @property {string} completedAt
+ */
+
+/**
  * @typedef {Object} LearningApiError
  * @property {string} name
  * @property {string} message
