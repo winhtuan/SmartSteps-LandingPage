@@ -63,11 +63,11 @@ export function clearPremiumAccount() {
 }
 
 export function getPremiumPlans() {
-  return requestJson("/api/premium/plans");
+  return requestJson("/premium/plans");
 }
 
 export async function ensurePremiumAccount({ email, fullName }) {
-  const account = await requestJson("/api/premium/account", {
+  const account = await requestJson("/premium/account", {
     method: "POST",
     body: { email, fullName },
   });
@@ -77,11 +77,11 @@ export async function ensurePremiumAccount({ email, fullName }) {
 }
 
 export function getPremiumStatus(userId) {
-  return requestJson(`/api/premium/status/${encodeURIComponent(userId)}`);
+  return requestJson(`/premium/status/${encodeURIComponent(userId)}`);
 }
 
 export function redeemPremiumCode({ userId, email, fullName, code }) {
-  return requestJson("/api/premium/redeem-code", {
+  return requestJson("/premium/redeem-code", {
     method: "POST",
     body: { userId, email, fullName, code },
   });
@@ -90,7 +90,7 @@ export function redeemPremiumCode({ userId, email, fullName, code }) {
 export function createPremiumPayment({ userId, email, fullName, planCode }) {
   const learningUrl = `${window.location.origin}/learning`;
 
-  return requestJson("/api/premium/payments", {
+  return requestJson("/premium/payments", {
     method: "POST",
     body: {
       userId,
@@ -104,7 +104,7 @@ export function createPremiumPayment({ userId, email, fullName, planCode }) {
 }
 
 export function confirmPremiumPayment({ orderCode, userId }) {
-  return requestJson(`/api/premium/payments/${encodeURIComponent(orderCode)}/confirm`, {
+  return requestJson(`/premium/payments/${encodeURIComponent(orderCode)}/confirm`, {
     method: "POST",
     body: { userId },
   });

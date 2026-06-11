@@ -275,9 +275,9 @@ Service methods:
 Networking rules:
 
 - Keep API base URL in config, not hardcoded in components.
-- Keep Supabase service role key only on `SmartStepsServer`; never expose it in web code.
+- Keep Cloudinary API secret only on `SmartStepsServer`; never expose it in web code.
 - Handle loading, error, empty, and retry states around every API request.
-- Media endpoints may require `Authorization: Bearer <supabase-access-token>` depending on server config.
+- Media endpoints are signed on the server; the web app should not need to send a media auth token.
 
 Map UI like this:
 
@@ -511,7 +511,7 @@ Tasks:
 - Confirm base URL is reachable at `http://localhost:5078`.
 - Verify Swagger or direct requests for `GET /api/islands`, `GET /api/situations`, and `GET /api/situations/{id}`.
 - Confirm CORS allows the React dev origin.
-- Move or override Supabase service role configuration outside committed frontend code.
+- Move or override Cloudinary secret configuration outside committed frontend code.
 
 Done when:
 
@@ -613,12 +613,12 @@ Tasks:
 - Detect lesson steps and flashcard voice fields that need playback.
 - Call `POST /api/media/signed-url` with `stepId` before private step media playback.
 - Call `POST /api/media/signed-voice-url` with `mediaUrl` before private voice playback.
-- Pass `Authorization: Bearer <supabase-access-token>` when server config requires it.
+- Request fresh signed media URLs from the backend when playback needs them.
 - Handle expired signed URLs by requesting a fresh URL before replay.
 
 Done when:
 
-- Private step media and voice media can be played without exposing Supabase service role keys.
+- Private step media and voice media can be played without exposing Cloudinary API secrets.
 - Missing auth, missing media, and signing failures show clear user-facing errors.
 
 ### Phase 7: Motion and interaction polish

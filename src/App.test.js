@@ -127,42 +127,8 @@ test("renders the lesson route as smaller lesson components", () => {
   ).toBeDisabled();
 });
 
-test("loads the intro video for personal safety from the backend", async () => {
+test("loads the intro video for personal safety from Cloudinary", async () => {
   setAuthenticatedSession();
-  global.fetch = jest.fn((url) => {
-    if (String(url).endsWith("/api/situations/1")) {
-      return Promise.resolve({
-        ok: true,
-        status: 200,
-        json: () =>
-          Promise.resolve({
-            situationId: 1,
-            title: "Bài 1: Vật tròn lấp lánh",
-            steps: [
-              {
-                stepId: 1,
-                stepType: "Intro",
-                mediaUrl: "Lession1/Videos/lesson1-intro.mp4",
-              },
-            ],
-          }),
-      });
-    }
-
-    if (String(url).endsWith("/api/media/signed-url")) {
-      return Promise.resolve({
-        ok: true,
-        status: 200,
-        json: () =>
-          Promise.resolve({
-            stepId: 1,
-            signedUrl: "https://media.example/lesson1-intro.mp4",
-          }),
-      });
-    }
-
-    return Promise.reject(new Error(`Unexpected request: ${url}`));
-  });
 
   window.history.pushState({}, "", "/lesson/1");
   const { container } = render(<App />);
@@ -170,23 +136,9 @@ test("loads the intro video for personal safety from the backend", async () => {
   await waitFor(() => {
     expect(container.querySelector("video")).toHaveAttribute(
       "src",
-      "https://media.example/lesson1-intro.mp4",
+      "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136864/Safety_smallitems_intro_cw1tlh.mp4",
     );
   });
-
-  expect(global.fetch).toHaveBeenNthCalledWith(
-    1,
-    "http://localhost:5078/api/situations/1",
-    expect.objectContaining({ method: "GET" }),
-  );
-  expect(global.fetch).toHaveBeenNthCalledWith(
-    2,
-    "http://localhost:5078/api/media/signed-url",
-    expect.objectContaining({
-      body: JSON.stringify({ stepId: 1 }),
-      method: "POST",
-    }),
-  );
 });
 
 test("opens the learning tip from the mascot button", () => {

@@ -1,9 +1,3 @@
-import lesson1CorrectVideo from "../../../assets/media/videos/Safety_smallitems/lesson1-correct.mp4";
-import lesson1WrongVideo from "../../../assets/media/videos/Safety_smallitems/lesson1-wrong.mp4";
-import crossroadCorrectVideo from "../../../assets/media/videos/Crossroad/correct.mp4";
-import crossroadIntroVideo from "../../../assets/media/videos/Crossroad/intro.mp4";
-import crossroadWrongVideo from "../../../assets/media/videos/Crossroad/wrong.mp4";
-
 const DEFAULT_BACKGROUND_IMAGE =
   "https://lh3.googleusercontent.com/aida/AP1WRLuDehCcKNXypLmQGwQOVrUPeSZyYNbtDFn__bItjuMrs3WynSrPwRiRGNn5pAUW0OjO9ilXusjXcGD5G0JSJDatoT0Vc_rMhB4pv4RNyMNeDCQ0R0fZ3SPD36W1eftQTTBpqRAiC3sF6sB9lAhKkeJoE-XXX9sziJc4EQrpH3dMK5mlXiSpAf4FyHlqPHLVzEIuZhRfwRwNMT3Hur9PE4Zr6BWeH3-aFv50reIUnOEx5WTFXPAvxF6CST_2";
 
@@ -11,6 +5,13 @@ const DEFAULT_VIDEO_POSTER =
   "https://lh3.googleusercontent.com/aida/AP1WRLvJphJcxnXLkSTTAuj39D5mQPNQg-DkgEJMZJY3ThU4szBJXWUHP690W-NegSs3tqk4ZxkC70jk06OYUF4PBpNAgFSczO8Z0yFiw0W4FN8PIF0ifM5QZIm_aA6oYH1zsWbbL_AaRRia_Trt9BOk0iDT_HwmW8BOF1nTP7kwvJnrzKiyAoF3EOPf-9iSc-teCfAiBcBoJoda8j0w3exNO3E9mCvgfyh85ULYAbRTjlX9H14KHOGk_TyCIsKl";
 
 const DEFAULT_WORLD_TITLE = "An toàn cá nhân";
+
+const CLOUDINARY_CLOUD_NAME = "dtm5a4bwr";
+const CLOUDINARY_VIDEO_BASE_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload`;
+
+function buildCloudinaryVideoUrl(publicId) {
+  return `${CLOUDINARY_VIDEO_BASE_URL}/${publicId}`;
+}
 
 const lessonConfigBySituationId = {
   1: {
@@ -22,8 +23,9 @@ const lessonConfigBySituationId = {
     mapIntro: "Bé học hỏi người lớn trước khi chạm vào vật lạ.",
     videoPoster: DEFAULT_VIDEO_POSTER,
     backgroundImage: DEFAULT_BACKGROUND_IMAGE,
-    correctVideoUrl: lesson1CorrectVideo,
-    wrongVideoUrl: lesson1WrongVideo,
+    introVideoUrl: "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136864/Safety_smallitems_intro_cw1tlh.mp4",
+    correctVideoUrl: buildCloudinaryVideoUrl("Safety_smallitems_correct_u5ubla.mp4"),
+    wrongVideoUrl: "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136866/Safety_smallitems_wrong_pjogba.mp4",
     answerOptions: [
       {
         id: "adult",
@@ -50,9 +52,9 @@ const lessonConfigBySituationId = {
     mapIntro: "Bé luyện cách dừng lại, nhìn đèn giao thông và nắm tay người lớn.",
     videoPoster: DEFAULT_VIDEO_POSTER,
     backgroundImage: DEFAULT_BACKGROUND_IMAGE,
-    introVideoUrl: crossroadIntroVideo,
-    correctVideoUrl: crossroadCorrectVideo,
-    wrongVideoUrl: crossroadWrongVideo,
+    introVideoUrl: "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136588/cross-road-intro_tnrhmy.mp4",
+    correctVideoUrl: buildCloudinaryVideoUrl("cross-road-correct_r36izw.mp4"),
+    wrongVideoUrl: buildCloudinaryVideoUrl("cross-road-wrong_fnc8fg.mp4"),
     answerOptions: [
       {
         id: "wait-and-look",
@@ -89,8 +91,8 @@ export function getLessonContent(situationId, lesson = null) {
     videoPoster: config.videoPoster || DEFAULT_VIDEO_POSTER,
     backgroundImage: config.backgroundImage || DEFAULT_BACKGROUND_IMAGE,
     introVideoUrl: config.introVideoUrl || "",
-    correctVideoUrl: config.correctVideoUrl || lesson1CorrectVideo,
-    wrongVideoUrl: config.wrongVideoUrl || lesson1WrongVideo,
+    correctVideoUrl: config.correctVideoUrl || "",
+    wrongVideoUrl: config.wrongVideoUrl || "",
     answerOptions: config.answerOptions || lessonConfigBySituationId[1].answerOptions,
   };
 }

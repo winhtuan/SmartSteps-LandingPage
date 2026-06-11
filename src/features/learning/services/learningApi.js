@@ -1,10 +1,5 @@
-const DEFAULT_API_BASE_URL =
-  window.location.protocol === "https:"
-    ? "https://localhost:7289"
-    : "http://localhost:5078";
-
 export const smartStepsApiBaseUrl = normalizeBaseUrl(
-  process.env.REACT_APP_SMARTSTEPS_API_BASE_URL || DEFAULT_API_BASE_URL
+  process.env.REACT_APP_API_BASE_URL || "http://localhost:5000/api"
 );
 
 export class LearningApiError extends Error {
@@ -22,7 +17,7 @@ export class LearningApiError extends Error {
  * @returns {Promise<import("../types/learning.type").IslandSummary[]>}
  */
 export function getIslands() {
-  return requestJson("/api/islands");
+  return requestJson("/islands");
 }
 
 /**
@@ -30,7 +25,7 @@ export function getIslands() {
  * @returns {Promise<import("../types/learning.type").SituationSummary[]>}
  */
 export function getIslandSituations(islandId) {
-  return requestJson(`/api/islands/${encodeURIComponent(islandId)}/situations`);
+  return requestJson(`/islands/${encodeURIComponent(islandId)}/situations`);
 }
 
 /**
@@ -38,7 +33,7 @@ export function getIslandSituations(islandId) {
  * @returns {Promise<import("../types/learning.type").SituationDetail>}
  */
 export function getSituationDetail(situationId) {
-  return requestJson(`/api/situations/${encodeURIComponent(situationId)}`);
+  return requestJson(`/situations/${encodeURIComponent(situationId)}`);
 }
 
 /**
@@ -47,7 +42,7 @@ export function getSituationDetail(situationId) {
  * @returns {Promise<import("../types/learning.type").SignedMediaUrl>}
  */
 export function createSignedMediaUrl(stepId, accessToken) {
-  return requestJson("/api/media/signed-url", {
+  return requestJson("/media/signed-url", {
     method: "POST",
     accessToken,
     body: { stepId },
@@ -60,7 +55,7 @@ export function createSignedMediaUrl(stepId, accessToken) {
  * @returns {Promise<import("../types/learning.type").SignedMediaUrl>}
  */
 export function createSignedVoiceUrl(mediaUrl, accessToken) {
-  return requestJson("/api/media/signed-voice-url", {
+  return requestJson("/media/signed-voice-url", {
     method: "POST",
     accessToken,
     body: { mediaUrl },
@@ -73,7 +68,7 @@ export function createSignedVoiceUrl(mediaUrl, accessToken) {
  */
 export function getUserLearningProgress({ userEmail }) {
   const normalizedEmail = String(userEmail || "").trim().toLowerCase();
-  return requestJson(`/api/progress?userEmail=${encodeURIComponent(normalizedEmail)}`);
+  return requestJson(`/progress?userEmail=${encodeURIComponent(normalizedEmail)}`);
 }
 
 /**
@@ -81,7 +76,7 @@ export function getUserLearningProgress({ userEmail }) {
  * @returns {Promise<import("../types/learning.type").CompleteSituationProgressResponse>}
  */
 export function completeSituationProgress({ fullName, situationId, userEmail }) {
-  return requestJson("/api/progress/complete", {
+  return requestJson("/progress/complete", {
     method: "POST",
     body: {
       fullName: fullName || undefined,
