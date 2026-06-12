@@ -5,9 +5,9 @@ const DEFAULT_VIDEO_POSTER =
   "https://lh3.googleusercontent.com/aida/AP1WRLvJphJcxnXLkSTTAuj39D5mQPNQg-DkgEJMZJY3ThU4szBJXWUHP690W-NegSs3tqk4ZxkC70jk06OYUF4PBpNAgFSczO8Z0yFiw0W4FN8PIF0ifM5QZIm_aA6oYH1zsWbbL_AaRRia_Trt9BOk0iDT_HwmW8BOF1nTP7kwvJnrzKiyAoF3EOPf-9iSc-teCfAiBcBoJoda8j0w3exNO3E9mCvgfyh85ULYAbRTjlX9H14KHOGk_TyCIsKl";
 
 const DEFAULT_WORLD_TITLE = "An toàn cá nhân";
-
 const CLOUDINARY_CLOUD_NAME = "dtm5a4bwr";
-const CLOUDINARY_VIDEO_BASE_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload`;
+const CLOUDINARY_VIDEO_BASE_URL =
+  `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/video/upload`;
 
 function buildCloudinaryVideoUrl(publicId) {
   return `${CLOUDINARY_VIDEO_BASE_URL}/${publicId}`;
@@ -20,12 +20,15 @@ const lessonConfigBySituationId = {
     storyTitle: "Vật tròn lấp lánh",
     prompt: "Vật nhỏ lấp lánh có phải là đồ ăn không?",
     mapTitle: "Vật tròn lấp lánh",
-    mapIntro: "Bé học hỏi người lớn trước khi chạm vào vật lạ.",
+    mapIntro: "Bé hỏi người lớn trước khi chạm vào vật lạ.",
+    takeaway: "Gặp vật lạ, hãy đưa cho người lớn.",
     videoPoster: DEFAULT_VIDEO_POSTER,
     backgroundImage: DEFAULT_BACKGROUND_IMAGE,
-    introVideoUrl: "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136864/Safety_smallitems_intro_cw1tlh.mp4",
+    introVideoUrl:
+      "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136864/Safety_smallitems_intro_cw1tlh.mp4",
     correctVideoUrl: buildCloudinaryVideoUrl("Safety_smallitems_correct_u5ubla.mp4"),
-    wrongVideoUrl: "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136866/Safety_smallitems_wrong_pjogba.mp4",
+    wrongVideoUrl:
+      "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136866/Safety_smallitems_wrong_pjogba.mp4",
     answerOptions: [
       {
         id: "adult",
@@ -39,7 +42,7 @@ const lessonConfigBySituationId = {
         label: "Nhặt lên và ăn thử",
         icon: "danger",
         result: "wrong",
-        feedback: "Mình cần suy nghĩ lại. Vật lạ có thể gây hóc hoặc nuốt phải dị vật.",
+        feedback: "Vật lạ có thể làm con bị hóc. Hãy nhờ người lớn giúp nhé.",
       },
     ],
   },
@@ -50,9 +53,11 @@ const lessonConfigBySituationId = {
     prompt: "Khi qua đường ở ngã tư, con nên làm gì trước?",
     mapTitle: "Qua đường an toàn",
     mapIntro: "Bé luyện cách dừng lại, nhìn đèn giao thông và nắm tay người lớn.",
+    takeaway: "Dừng lại, quan sát và luôn đi cùng người lớn.",
     videoPoster: DEFAULT_VIDEO_POSTER,
     backgroundImage: DEFAULT_BACKGROUND_IMAGE,
-    introVideoUrl: "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136588/cross-road-intro_tnrhmy.mp4",
+    introVideoUrl:
+      "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136588/cross-road-intro_tnrhmy.mp4",
     correctVideoUrl: buildCloudinaryVideoUrl("cross-road-correct_r36izw.mp4"),
     wrongVideoUrl: buildCloudinaryVideoUrl("cross-road-wrong_fnc8fg.mp4"),
     answerOptions: [
@@ -88,6 +93,7 @@ export function getLessonContent(situationId, lesson = null) {
       buildAdventureLabel(lesson?.orderIndex || normalizedSituationId, fallbackStoryTitle),
     storyTitle: config.storyTitle || fallbackStoryTitle || `Bài ${normalizedSituationId}`,
     prompt: config.prompt || "Con hãy xem video và chọn cách an toàn nhé.",
+    takeaway: config.takeaway || "Hãy nhớ chọn cách an toàn và nhờ người lớn giúp đỡ.",
     videoPoster: config.videoPoster || DEFAULT_VIDEO_POSTER,
     backgroundImage: config.backgroundImage || DEFAULT_BACKGROUND_IMAGE,
     introVideoUrl: config.introVideoUrl || "",
@@ -129,9 +135,5 @@ export function getRequestedSituationId() {
 }
 
 function buildAdventureLabel(orderIndex, storyTitle) {
-  if (!storyTitle) {
-    return `Bài ${orderIndex}`;
-  }
-
-  return `Bài ${orderIndex} • ${storyTitle}`;
+  return storyTitle ? `Bài ${orderIndex} • ${storyTitle}` : `Bài ${orderIndex}`;
 }

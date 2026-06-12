@@ -7,11 +7,11 @@ function AnswerIcon({ selected, state }) {
     return <Circle size={20} weight="regular" />;
   }
 
-  if (state === "correct") {
-    return <SealCheck size={20} weight="fill" />;
-  }
-
-  return <WarningCircle size={20} weight="fill" />;
+  return state === "correct" ? (
+    <SealCheck size={20} weight="fill" />
+  ) : (
+    <WarningCircle size={20} weight="fill" />
+  );
 }
 
 export function LessonSidePanel({
@@ -28,27 +28,34 @@ export function LessonSidePanel({
 }) {
   const answerFeedback =
     answerState === "correct"
-      ? { title: "Chính xác!", detail: "+10 XP", note: "Bé đã chọn rất tốt!", type: "correct" }
+      ? {
+          title: completed ? "Chính xác!" : "Đang xem kết quả...",
+          detail: completed ? "+10 XP" : "",
+          note: completed ? "Bé đã chọn rất tốt!" : "",
+          type: "correct",
+        }
       : answerState === "wrong"
         ? { title: "Hãy suy nghĩ lại nhé!", detail: "", note: "", type: "wrong" }
         : introCompleted
           ? { title: "Chọn cách an toàn nhất cho bé", detail: "", note: "", type: "neutral" }
-          : { title: "Xem video trước để mở phần chọn đáp án", detail: "", note: "", type: "muted" };
+          : {
+              title: "Xem video trước để mở phần chọn đáp án",
+              detail: "",
+              note: "",
+              type: "muted",
+            };
 
   return (
-    <aside className="lesson-side-panel" aria-labelledby="lesson-side-panel-title">
-      <section className="lesson-side-card lesson-side-card--question" aria-labelledby="lesson-side-panel-question-title">
+    <aside className="lesson-side-panel" aria-labelledby="lesson-side-panel-question-title">
+      <section className="lesson-side-card lesson-side-card--question">
         <h2 id="lesson-side-panel-question-title" className="lesson-side-panel__title">
           Câu hỏi
         </h2>
         <MascotQuestion prompt={prompt} compact />
       </section>
 
-      <section className="lesson-side-card lesson-side-card--answers" aria-labelledby="lesson-side-panel-answer-title">
-        <div className="lesson-side-card__header lesson-side-card__header--compact">
-          <h3 id="lesson-side-panel-answer-title">Con sẽ làm gì?</h3>
-        </div>
-
+      <section className="lesson-side-card lesson-side-card--answers">
+        <h3>Con sẽ làm gì?</h3>
         <div className="lesson-answer-grid">
           {answerOptions.map((option) => {
             const selected = selectedAnswerId === option.id;
@@ -57,16 +64,13 @@ export function LessonSidePanel({
                 ? "lesson-answer-card--correct"
                 : selected && option.result === "wrong"
                   ? "lesson-answer-card--wrong"
-                  : selected
-                    ? "lesson-answer-card--selected"
-                    : "";
-            const shakeClass = selected && option.result === "wrong" ? " lesson-answer-card--shake" : "";
+                  : "";
 
             return (
               <button
                 key={option.id}
                 type="button"
-                className={`lesson-answer-card ${stateClass}${shakeClass}`.trim()}
+                className={`lesson-answer-card ${stateClass}`.trim()}
                 disabled={!introCompleted}
                 onClick={() => onAnswerSelect(option)}
               >
@@ -86,11 +90,8 @@ export function LessonSidePanel({
           className={`lesson-answer-feedback-panel lesson-answer-feedback-panel--${answerFeedback.type}`}
           aria-live="polite"
         >
-          {answerFeedback.type === "correct" ? (
-            <SealCheck size={16} weight="fill" />
-          ) : answerFeedback.type === "wrong" ? (
-            <WarningCircle size={16} weight="fill" />
-          ) : null}
+          {answerFeedback.type === "correct" ? <SealCheck size={16} weight="fill" /> : null}
+          {answerFeedback.type === "wrong" ? <WarningCircle size={16} weight="fill" /> : null}
           <div className="lesson-answer-feedback-panel__copy">
             <strong>{answerFeedback.title}</strong>
             {answerFeedback.detail ? <span>{answerFeedback.detail}</span> : null}

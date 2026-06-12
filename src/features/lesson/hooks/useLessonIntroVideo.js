@@ -16,7 +16,6 @@ export function useLessonIntroVideo() {
     const situationId = getRequestedSituationId();
     const lessonContent = getLessonContent(situationId);
     setRequestedSituationId(situationId);
-
     setStatus("loading");
     setError(null);
 

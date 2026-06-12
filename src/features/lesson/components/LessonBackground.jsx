@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 
-export function LessonBackground({ imageUrl }) {
+export function LessonBackground({ imageUrl, responsiveImageUrl }) {
   const imageRef = useRef(null);
 
   useEffect(() => {
     const handlePointerMove = (event) => {
       const image = imageRef.current;
 
-      if (!image) {
+      if (!image || window.matchMedia("(max-width: 1200px), (max-height: 640px)").matches) {
         return;
       }
 
@@ -22,7 +22,15 @@ export function LessonBackground({ imageUrl }) {
 
   return (
     <div className="lesson-background" aria-hidden="true">
-      <img ref={imageRef} src={imageUrl} alt="" />
+      <picture>
+        {responsiveImageUrl ? (
+          <source
+            media="(max-width: 1200px), (max-height: 640px)"
+            srcSet={responsiveImageUrl}
+          />
+        ) : null}
+        <img ref={imageRef} src={imageUrl} alt="" />
+      </picture>
       <div className="lesson-background__shade" />
     </div>
   );

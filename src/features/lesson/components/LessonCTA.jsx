@@ -1,4 +1,4 @@
-import { ArrowClockwise, ArrowRight } from "@phosphor-icons/react";
+import { ArrowClockwise, MapTrifold } from "@phosphor-icons/react";
 
 export function LessonCTA({ canContinue, completed, onContinue, onReplay }) {
   const ready = completed && canContinue;
@@ -21,8 +21,8 @@ export function LessonCTA({ canContinue, completed, onContinue, onReplay }) {
           disabled={!ready}
           onClick={onContinue}
         >
-          <span>Bài tiếp theo</span>
-          <ArrowRight size={18} weight="bold" />
+          <span>Về bản đồ</span>
+          <MapTrifold size={18} weight="fill" />
         </button>
       </div>
     </div>

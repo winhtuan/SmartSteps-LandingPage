@@ -20,11 +20,16 @@ import mascotSinging from "../../../assets/images/mascot/mascot-cat-singing.png"
 import mascotSpeaking from "../../../assets/images/mascot/mascot-cat-speaking.png";
 import mascotSulking from "../../../assets/images/mascot/mascot-cat-sulking.png";
 import planProIcon from "../../../assets/icons/pricing/plan-pro.svg";
+import { navigateInApp } from "../../../app/navigation";
 import { Brand } from "../../../components/ui/Brand";
 import { ButtonLink } from "../../../components/ui/ButtonLink";
 import { AuthSidebar } from "../../auth/components/AuthSidebar";
 import { isAuthenticated } from "../../auth/services/authApi";
 import { getPreferredLanguage } from "../../landing/services/languagePreference";
+import {
+  enterLessonLandscape,
+  isSmallLessonViewport,
+} from "../../lesson/utils/lessonOrientation";
 import { PremiumUpgradeModal } from "../../premium/components/PremiumUpgradeModal";
 import { learnerProfile, learningStats } from "../data/learningMapContent";
 import { LearningMapProvider, useLearningMap } from "../providers/LearningMapProvider";
@@ -905,12 +910,16 @@ function getLessonDisplayTitle(lesson) {
   return normalizedTitle || title;
 }
 
-function openLesson(lesson) {
+async function openLesson(lesson) {
   if (!lesson?.situationId) {
     return;
   }
 
-  window.location.assign(`/lesson/${encodeURIComponent(lesson.situationId)}`);
+  if (isSmallLessonViewport()) {
+    await enterLessonLandscape(document.documentElement);
+  }
+
+  navigateInApp(`/lesson/${encodeURIComponent(lesson.situationId)}`);
 }
 
 function getIslandDisplayName(island) {

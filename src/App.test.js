@@ -104,7 +104,7 @@ test("renders the learning map route", () => {
   expect(screen.queryByRole("heading", { name: "Chọn chủ đề khác" })).not.toBeInTheDocument();
 });
 
-test("renders the lesson route as smaller lesson components", () => {
+test("reveals the landscape lesson question only after the intro video ends", async () => {
   setAuthenticatedSession();
   global.fetch = jest.fn(() =>
     Promise.resolve({
@@ -117,14 +117,42 @@ test("renders the lesson route as smaller lesson components", () => {
   );
 
   window.history.pushState({}, "", "/lesson");
-  render(<App />);
+  const { container } = render(<App />);
 
-  expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(/an toàn cá nhân/i);
+  expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+    /bài 1.*phòng tránh hóc và nuốt dị vật/i,
+  );
+  expect(screen.queryByText(/vật nhỏ lấp lánh có phải là đồ ăn không/i)).not.toBeInTheDocument();
+
+  await waitFor(() => expect(container.querySelector("video")).toBeInTheDocument());
+  fireEvent.ended(container.querySelector("video"));
+
   expect(screen.getByText(/vật nhỏ lấp lánh có phải là đồ ăn không/i)).toBeInTheDocument();
-  expect(screen.getByRole("complementary")).toBeInTheDocument();
-  expect(
-    screen.getAllByRole("button").find((button) => button.className === "lesson-video-cta__button"),
-  ).toBeDisabled();
+  expect(screen.getByRole("button", { name: /đưa cho người lớn/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /nhặt lên và ăn thử/i })).toBeInTheDocument();
+});
+
+test("shows retry actions only after the wrong feedback video ends", async () => {
+  setAuthenticatedSession();
+  window.history.pushState({}, "", "/lesson/1");
+  const { container } = render(<App />);
+
+  await waitFor(() => expect(container.querySelector("video")).toBeInTheDocument());
+  fireEvent.ended(container.querySelector("video"));
+  fireEvent.click(screen.getByRole("button", { name: /nhặt lên và ăn thử/i }));
+
+  await waitFor(() =>
+    expect(container.querySelector("video")).toHaveAttribute(
+      "src",
+      expect.stringContaining("Safety_smallitems_wrong"),
+    ),
+  );
+  expect(screen.queryByRole("button", { name: /chọn lại/i })).not.toBeInTheDocument();
+
+  fireEvent.ended(container.querySelector("video"));
+
+  expect(screen.getByRole("button", { name: /chọn lại/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /xem lại tình huống/i })).toBeInTheDocument();
 });
 
 test("loads the intro video for personal safety from Cloudinary", async () => {
@@ -139,6 +167,34 @@ test("loads the intro video for personal safety from Cloudinary", async () => {
       "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136864/Safety_smallitems_intro_cw1tlh.mp4",
     );
   });
+});
+
+test("keeps the original video and side panel layout on desktop", async () => {
+  const originalMatchMedia = window.matchMedia;
+  const consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
+  window.matchMedia = jest.fn().mockImplementation((query) => ({
+    matches: query === "(min-width: 1201px) and (min-height: 641px)",
+    media: query,
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+  }));
+  try {
+    setAuthenticatedSession();
+    window.history.pushState({}, "", "/lesson/1");
+
+    const { container } = render(<App />);
+
+    await waitFor(() =>
+      expect(container.querySelector(".lesson-main--desktop")).toBeInTheDocument(),
+    );
+    expect(container.querySelector(".lesson-wooden-sign")).toBeInTheDocument();
+    expect(container.querySelector(".lesson-video-frame")).toBeInTheDocument();
+    expect(screen.getByRole("complementary")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Các câu trả lời")).not.toBeInTheDocument();
+  } finally {
+    window.matchMedia = originalMatchMedia;
+    consoleError.mockRestore();
+  }
 });
 
 test("opens the learning tip from the mascot button", () => {
