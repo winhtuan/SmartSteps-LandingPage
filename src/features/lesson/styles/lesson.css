@@ -430,6 +430,50 @@
   padding: 0;
 }
 
+.lesson-video__skip {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(255, 250, 240, 0.22);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.38);
+  padding: 0.35rem 0.85rem 0.35rem 0.7rem;
+  color: rgba(255, 250, 240, 0.88);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+  animation: lesson-skip-appear 0.4s ease 2.5s both;
+}
+
+.lesson-video__skip:hover {
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.lesson-video__skip:focus-visible {
+  outline: 2px solid rgba(255, 250, 240, 0.7);
+  outline-offset: 3px;
+}
+
+@keyframes lesson-skip-appear {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 .lesson-question-stage__background,
 .lesson-complete-stage__background {
   position: absolute;
@@ -939,65 +983,77 @@
   }
 }
 
-@media (orientation: portrait) and (max-width: 1024px) {
-  .lesson-page--orientation-prompt {
-    display: grid;
-    place-items: center;
+/* Custom responsive layout for portrait and narrow screens (max-width: 768px) */
+@media (max-width: 768px) {
+  .lesson-complete-stage {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto !important;
+    gap: 1rem !important;
+    padding: var(--lesson-space-6) var(--lesson-space-4) !important;
+    text-align: center !important;
   }
 
-  .lesson-page--orientation-prompt .lesson-shell {
-    display: none;
+  .lesson-complete-stage__mascot {
+    place-items: center !important;
+    height: auto !important;
   }
 
-  .lesson-page--orientation-prompt .lesson-orientation {
-    position: relative;
-    z-index: 2;
-    display: grid;
-    width: min(88vw, 24rem);
-    justify-items: center;
-    border: 2px solid rgba(255, 255, 255, 0.82);
-    border-radius: 2rem;
-    background: rgba(255, 253, 242, 0.95);
-    padding: 2rem 1.5rem;
-    color: #51420d;
-    text-align: center;
-    box-shadow: var(--lesson-shadow);
-    backdrop-filter: blur(14px);
+  .lesson-complete-stage__mascot img {
+    width: min(100%, 11rem) !important;
+    max-height: 12rem !important;
   }
 
-  .lesson-orientation__icon {
-    position: relative;
-    display: grid;
-    width: 5.25rem;
-    height: 5.25rem;
-    place-items: center;
-    border-radius: 1.6rem;
-    background: #eaf8e9;
-    color: var(--lesson-green);
+  .lesson-complete-stage__content {
+    align-items: center !important;
+    text-align: center !important;
   }
 
-  .lesson-orientation__icon svg:last-child {
-    position: absolute;
-    right: -0.35rem;
-    bottom: -0.2rem;
-    border-radius: 999px;
-    background: var(--lesson-honey);
-    padding: 0.22rem;
-    color: #5a4700;
+  .lesson-feedback-stage__review {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 1rem !important;
+    background: rgba(10, 25, 15, 0.96) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+    padding: 1.25rem !important;
   }
 
-  .lesson-orientation h2 {
-    margin: 1.2rem 0 0;
-    font-size: clamp(1.45rem, 6vw, 2rem);
-    font-weight: 900;
+  .lesson-feedback-stage__message {
+    max-width: 100% !important;
+    justify-items: center !important;
   }
 
-  .lesson-orientation p {
-    margin: 0.55rem 0 0;
-    color: #6d634d;
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.45;
+  .lesson-feedback-stage__actions {
+    width: 100% !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* Custom responsive layout for very narrow portrait mobile (max-width: 580px) */
+@media (max-width: 580px) {
+  .lesson-flashcard-stage__prompt {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    text-align: center !important;
+    padding-inline: 0.5rem !important;
+  }
+
+  .lesson-flashcard-stage__mascot {
+    transform: none !important;
+    margin-bottom: -0.25rem !important;
+    width: 4rem !important;
+  }
+
+  .lesson-flashcard-stage__bubble {
+    max-width: 100% !important;
+    margin-right: 0 !important;
+    padding: 0.65rem 1rem !important;
+  }
+
+  .lesson-flashcard-stage__bubble::before {
+    display: none !important;
   }
 }
 
@@ -1613,7 +1669,7 @@
   .lesson-video__media {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: contain !important;
     object-position: var(--video-position, center center);
   }
 
@@ -1893,3 +1949,422 @@
     font-size: 1rem;
   }
 }
+
+/* ============================================================
+   Mobile Fullscreen Intro Video & Flashcard
+   ============================================================ */
+
+/* Khi mobile intro/question/feedback video, bỏ padding shell để chiếm full viewport */
+.lesson-page--mobile-fullscreen .lesson-shell {
+  padding: 0;
+}
+
+/* lesson-main vẫn flex:1, không cần absolute */
+.lesson-page--mobile-fullscreen .lesson-main {
+  overflow: hidden;
+}
+
+/* Nút bỏ qua vẫn hiển thị dù header ẩn */
+.lesson-page--mobile-fullscreen .lesson-video__skip {
+  z-index: 10;
+}
+
+/* Video stage mobile fullscreen: chiếm toàn bộ flex space */
+.lesson-stage--mobile-fullscreen {
+  position: relative;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  aspect-ratio: unset !important;
+  border-radius: 0 !important;
+  border: none !important;
+  flex: 1 1 auto;
+  align-self: stretch !important;
+}
+
+/* lesson-video trong fullscreen: fill toàn bộ parent */
+.lesson-stage--mobile-fullscreen .lesson-video {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+  background: #000;
+}
+
+.lesson-stage--mobile-fullscreen .lesson-video__media {
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  object-position: center center;
+}
+
+
+/* ============================================================
+   Answer Choice: Highlighted & Dimmed (mobile + desktop)
+   ============================================================ */
+
+/* Mobile question stage */
+.lesson-choice--highlighted {
+  border-color: #f3c84b !important;
+  background: rgba(255, 248, 219, 0.98) !important;
+  color: #4d3700 !important;
+  box-shadow: 0 8px 0 rgba(180, 130, 0, 0.65), 0 0 0 3px rgba(243, 200, 75, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+.lesson-choice--highlighted .lesson-choice__icon {
+  background: #fde57b;
+  color: #6b4900;
+}
+
+.lesson-choice--dimmed {
+  opacity: 0.5;
+  filter: grayscale(30%);
+  transform: none !important;
+}
+
+.lesson-choice__tap-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.25rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(243, 200, 75, 0.85);
+  color: #4d3700;
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+  animation: lesson-hint-pulse 1.4s ease-in-out infinite;
+}
+
+/* Desktop side panel */
+.lesson-answer-card--highlighted {
+  border-color: #f3c84b !important;
+  background: rgba(255, 248, 210, 0.97) !important;
+  color: #4d3700 !important;
+  box-shadow: 0 0 0 2px rgba(243, 200, 75, 0.5) !important;
+}
+
+.lesson-answer-card--highlighted .lesson-answer-card__icon {
+  background: #fde57b;
+  color: #6b4900;
+}
+
+.lesson-answer-card--dimmed {
+  opacity: 0.48;
+}
+
+.lesson-answer-card__tap-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: #7a5900;
+  font-size: 0.65rem;
+  font-weight: 800;
+  animation: lesson-hint-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes lesson-hint-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* ============================================================
+   Flashcard Stage (image card redesign)
+   ============================================================ */
+
+.lesson-flashcard-stage {
+  display: flex;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: clamp(0.75rem, 2.5vh, 1.25rem);
+  overflow: hidden;
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+  background:
+    linear-gradient(180deg, rgba(12, 36, 22, 0.82), rgba(8, 26, 16, 0.92)),
+    #0d2619;
+}
+
+
+/* --- Câu hỏi mascot bubble --- */
+.lesson-flashcard-stage__prompt {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0;
+  flex: 0 0 auto;
+}
+
+.lesson-flashcard-stage__mascot {
+  width: clamp(4rem, 10vw, 6rem);
+  height: auto;
+  flex: 0 0 auto;
+  object-fit: contain;
+  transform: translate(0.6rem, 0.3rem);
+  filter: drop-shadow(0 8px 14px rgba(8, 28, 16, 0.35));
+  z-index: 2;
+}
+
+.lesson-flashcard-stage__bubble {
+  position: relative;
+  max-width: min(72%, 36rem);
+  border: 2.5px solid rgba(255, 241, 187, 0.9);
+  border-radius: clamp(1rem, 2.5vw, 1.5rem);
+  background: rgba(255, 250, 236, 0.97);
+  padding: clamp(0.6rem, 2vw, 1rem) clamp(0.9rem, 2.5vw, 1.4rem);
+  color: #4a3800;
+  box-shadow: 0 10px 28px rgba(10, 32, 18, 0.28);
+}
+
+.lesson-flashcard-stage__bubble::before {
+  position: absolute;
+  left: -0.5rem;
+  bottom: 1.2rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  transform: rotate(45deg);
+  border-radius: 0.15rem;
+  background: rgba(255, 250, 236, 0.97);
+  border-left: 2.5px solid rgba(255, 241, 187, 0.9);
+  border-bottom: 2.5px solid rgba(255, 241, 187, 0.9);
+  content: "";
+  z-index: 0;
+}
+
+.lesson-flashcard-stage__eyebrow {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--lesson-green);
+  font-size: clamp(0.65rem, 1.6vw, 0.78rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.lesson-flashcard-stage__question {
+  margin: 0;
+  color: #3a2c00;
+  font-size: clamp(1rem, 2.8vw, 1.55rem);
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+/* --- Lưới 2 card ảnh --- */
+.lesson-choice-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.6rem, 2vw, 1.1rem);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* --- Card ảnh đơn --- */
+.lesson-choice-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.78);
+  border-radius: clamp(1rem, 2.5vw, 1.5rem);
+  background: #0d1f14;
+  cursor: pointer;
+  box-shadow: 0 10px 0 rgba(8, 28, 16, 0.55);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    opacity 200ms ease;
+  animation: lesson-card-enter 320ms ease-out both;
+}
+
+.lesson-choice-card:nth-child(2) {
+  animation-delay: 100ms;
+}
+
+.lesson-choice-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 13px 0 rgba(8, 28, 16, 0.5);
+}
+
+.lesson-choice-card:active {
+  transform: translateY(5px);
+  box-shadow: 0 4px 0 rgba(8, 28, 16, 0.5);
+}
+
+/* Trạng thái highlighted: viền vàng sáng */
+.lesson-choice-card--highlighted {
+  border-color: var(--lesson-honey) !important;
+  box-shadow: 0 10px 0 rgba(160, 110, 0, 0.7), 0 0 0 4px rgba(243, 200, 75, 0.35) !important;
+  transform: translateY(-3px) scale(1.015) !important;
+}
+
+/* Trạng thái dimmed: mờ đi */
+.lesson-choice-card--dimmed {
+  opacity: 0.42;
+  filter: grayscale(20%);
+  transform: none !important;
+  box-shadow: 0 6px 0 rgba(8, 28, 16, 0.38) !important;
+}
+
+/* --- Vùng ảnh --- */
+.lesson-choice-card__image-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.lesson-choice-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  transition: transform 220ms ease;
+}
+
+.lesson-choice-card:hover .lesson-choice-card__image {
+  transform: scale(1.04);
+}
+
+/* Placeholder khi không có ảnh */
+.lesson-choice-card__image-placeholder {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 8rem;
+  place-items: center;
+  background: linear-gradient(135deg, #1a3d28, #0f2519);
+  font-size: 3rem;
+}
+
+/* Overlay tap icon khi highlighted */
+.lesson-choice-card__overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(2px);
+  animation: lesson-overlay-appear 160ms ease-out both;
+}
+
+.lesson-choice-card__tap-icon {
+  display: grid;
+  width: 4rem;
+  height: 4rem;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--lesson-honey);
+  color: #3a2c00;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  animation: lesson-tap-bounce 0.8s ease-in-out infinite;
+}
+
+/* Badge kết quả nhỏ ở góc */
+.lesson-choice-card__badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: grid;
+  width: 1.8rem;
+  height: 1.8rem;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 900;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.lesson-choice-card__badge--correct {
+  background: #22c55e;
+  color: #fff;
+}
+
+.lesson-choice-card__badge--wrong {
+  background: #f87171;
+  color: #fff;
+}
+
+/* --- Label bên dưới ảnh --- */
+.lesson-choice-card__label {
+  flex: 0 0 auto;
+  padding: clamp(0.45rem, 1.5vw, 0.7rem) clamp(0.6rem, 2vw, 0.9rem);
+  background: rgba(255, 252, 240, 0.97);
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.lesson-choice-card__label strong {
+  display: block;
+  color: #2e3a31;
+  font-size: clamp(0.78rem, 2vw, 1rem);
+  font-weight: 900;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+/* Highlighted label */
+.lesson-choice-card--highlighted .lesson-choice-card__label {
+  background: rgba(255, 248, 210, 0.98);
+}
+
+.lesson-choice-card--highlighted .lesson-choice-card__label strong {
+  color: #3a2c00;
+}
+
+/* --- Keyframes --- */
+@keyframes lesson-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes lesson-overlay-appear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes lesson-tap-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-6px) scale(1.08); }
+  70% { transform: translateY(-2px) scale(1.03); }
+}
+
+/* Landscape small screen: giảm font label */
+@media (orientation: landscape) and (max-height: 520px) {
+  .lesson-flashcard-stage {
+    gap: 0.55rem;
+    padding: 0.55rem 0.8rem;
+  }
+
+  .lesson-flashcard-stage__mascot {
+    width: 3.5rem;
+  }
+
+  .lesson-flashcard-stage__question {
+    font-size: 0.95rem;
+  }
+
+  .lesson-choice-card__label strong {
+    font-size: 0.72rem;
+  }
+
+  .lesson-choice-card__tap-icon {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+

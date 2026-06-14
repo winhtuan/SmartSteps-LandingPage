@@ -1,4 +1,4 @@
-import { PlayCircle, SpinnerGap, WarningCircle } from "@phosphor-icons/react";
+import { FastForward, PlayCircle, SpinnerGap, WarningCircle } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 export function VideoLessonCard({
@@ -6,6 +6,7 @@ export function VideoLessonCard({
   instanceKey,
   isMuted,
   onRetry,
+  onSkip,
   onVideoEnded,
   onVideoPause,
   onVideoPlay,
@@ -23,6 +24,7 @@ export function VideoLessonCard({
   const [hasStarted, setHasStarted] = useState(!requireManualStart);
   const ready = Boolean(videoUrl);
   const loading = !ready && (status === "loading" || status === "idle");
+  const isUnderDevelopment = error?.code === "UNDER_DEVELOPMENT" || (!ready && !loading && !error);
   const resolvedPoster = useMemo(
     () => getVideoPosterUrl(videoUrl) || poster,
     [poster, videoUrl],
@@ -34,6 +36,16 @@ export function VideoLessonCard({
         icon: <SpinnerGap className="lesson-spin" size={40} weight="bold" />,
         title: "Đang tải video...",
         detail: "Chờ một chút nhé.",
+        action: null,
+      };
+    }
+
+    if (isUnderDevelopment) {
+      return {
+        icon: <WarningCircle size={40} weight="fill" />,
+        title: "Bài học đang được phát triển",
+        detail: "Nội dung video của bài học này đang được cập nhật.",
+        action: "skip",
       };
     }
 
@@ -41,8 +53,9 @@ export function VideoLessonCard({
       icon: <WarningCircle size={40} weight="fill" />,
       title: "Chưa tải được video",
       detail: error?.message || "Không thể kết nối với máy chủ.",
+      action: "retry",
     };
-  }, [error, loading]);
+  }, [error, loading, isUnderDevelopment]);
 
   useEffect(() => {
     if (!ready || !videoRef.current) {
@@ -148,9 +161,15 @@ export function VideoLessonCard({
           <strong>{statusMessage.title}</strong>
           <span>{statusMessage.detail}</span>
           {!loading ? (
-            <button type="button" className="lesson-action-button" onClick={onRetry}>
-              Thử tải lại
-            </button>
+            statusMessage.action === "skip" && onSkip ? (
+              <button type="button" className="lesson-action-button" onClick={onSkip}>
+                Bỏ qua và tiếp tục
+              </button>
+            ) : statusMessage.action === "retry" ? (
+              <button type="button" className="lesson-action-button" onClick={onRetry}>
+                Thử tải lại
+              </button>
+            ) : null
           ) : null}
         </div>
       ) : null}
@@ -173,6 +192,20 @@ export function VideoLessonCard({
               <small>Xem điều gì xảy ra nhé</small>
             </span>
           ) : null}
+        </button>
+      ) : null}
+      {ready && hasStarted && onSkip ? (
+        <button
+          type="button"
+          aria-label="Bỏ qua video"
+          className="lesson-video__skip"
+          onClick={() => {
+            videoRef.current?.pause();
+            onSkip();
+          }}
+        >
+          <FastForward size={15} weight="fill" />
+          Bỏ qua
         </button>
       ) : null}
     </div>

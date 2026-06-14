@@ -1,4 +1,4 @@
-import { CheckCircle, Gear, LockKey, SpeakerHigh, XCircle } from "@phosphor-icons/react";
+import { Gear, SpeakerHigh } from "@phosphor-icons/react";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { Modal } from "../../../components/ui/Modal";
 import { navigateInApp } from "../../../app/navigation";
@@ -6,12 +6,13 @@ import responsiveLessonBackground from "../../../assets/images/land/bg-root.png"
 import { getAuthSession } from "../../auth/services/authApi";
 import { completeSituationProgress } from "../../learning/services/learningApi";
 import { markSituationCompleted } from "../../learning/services/learningProgress";
+import { saveWrongAnswer } from "../../review/services/wrongAnswerStorage";
 import { getPremiumStatus, getStoredPremiumAccount } from "../../premium/services/premiumApi";
+import { doesSituationRequirePremium } from "../../premium/utils/premiumAccess";
 import { LessonBackground } from "../components/LessonBackground";
 import { LessonCompletionStage } from "../components/LessonCompletionStage";
 import { LessonFeedbackStage } from "../components/LessonFeedbackStage";
 import { LessonHeader } from "../components/LessonHeader";
-import { LessonOrientationPrompt } from "../components/LessonOrientationPrompt";
 import { LessonQuestionStage } from "../components/LessonQuestionStage";
 import { LessonSidePanel } from "../components/LessonSidePanel";
 import { StoryStage } from "../components/StoryStage";
@@ -23,12 +24,6 @@ import {
   LESSON_PHASES,
   lessonFlowReducer,
 } from "../state/lessonFlow";
-import {
-  enterLessonLandscape,
-  exitLessonLandscape,
-  isSmallLessonViewport,
-  isSmallPortraitViewport,
-} from "../utils/lessonOrientation";
 import "../styles/lesson.css";
 
 export function LessonPage() {
@@ -37,21 +32,10 @@ export function LessonPage() {
   const [flow, dispatchFlow] = useReducer(lessonFlowReducer, initialLessonFlowState);
   const [hasLessonAccess, setHasLessonAccess] = useState(true);
   const [isCheckingAccess, setIsCheckingAccess] = useState(false);
-  const [isGateOpen, setIsGateOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-  const [mathAnswerInput, setMathAnswerInput] = useState("");
-  const [mathError, setMathError] = useState("");
-  const [mathPrompt, setMathPrompt] = useState({ a: 1, b: 1, answer: 2, label: "" });
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [showOrientationPrompt, setShowOrientationPrompt] = useState(
-    isSmallPortraitViewport,
-  );
-  const lessonRootRef = useRef(null);
-  const orientationModeRequestedRef = useRef(false);
   const stageRef = useRef(null);
-  const pendingActionRef = useRef(null);
   const lessonContent = getLessonContent(requestedSituationId, lesson);
 
   const canContinue = flow.phase === LESSON_PHASES.COMPLETED;
@@ -70,10 +54,23 @@ export function LessonPage() {
     (flow.phase === LESSON_PHASES.FEEDBACK_WRONG && flow.feedbackComplete) ||
     flow.phase === LESSON_PHASES.COMPLETED;
 
+  // Ẩn header trên mobile khi xem intro video, câu hỏi (flashcard), hoặc khi đang phát video kết quả (feedback video chưa kết thúc)
+  const isMobileFullscreen = !isDesktop && (
+    flow.phase === LESSON_PHASES.INTRO ||
+    flow.phase === LESSON_PHASES.QUESTION ||
+    ((flow.phase === LESSON_PHASES.FEEDBACK_WRONG || flow.phase === LESSON_PHASES.FEEDBACK_CORRECT) && !flow.feedbackComplete)
+  );
+
   useEffect(() => {
     let ignore = false;
 
-    if (Number(requestedSituationId) !== 3) {
+    // Build a minimal situation object so the shared utility can evaluate premium rules.
+    // `lesson` is populated from the API/static data; fall back to situationId only.
+    const situationForCheck = lesson
+      ? { situationId: requestedSituationId, islandId: lesson.islandId, orderIndex: lesson.orderIndex }
+      : { situationId: requestedSituationId };
+
+    if (!doesSituationRequirePremium(situationForCheck)) {
       setHasLessonAccess(true);
       setIsCheckingAccess(false);
       return () => {
@@ -121,7 +118,7 @@ export function LessonPage() {
     return () => {
       ignore = true;
     };
-  }, [requestedSituationId]);
+  }, [requestedSituationId, lesson]);
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -136,91 +133,11 @@ export function LessonPage() {
     stageRef.current?.focus({ preventScroll: true });
   }, [flow.phase]);
 
-  useEffect(() => {
-    if (isCheckingAccess || !hasLessonAccess) {
-      return undefined;
-    }
-
-    let active = true;
-    const updateOrientationPrompt = () => {
-      if (active) {
-        setShowOrientationPrompt(isSmallPortraitViewport());
-      }
-    };
-
-    updateOrientationPrompt();
-    window.addEventListener("resize", updateOrientationPrompt);
-    window.addEventListener("orientationchange", updateOrientationPrompt);
-    window.screen?.orientation?.addEventListener?.("change", updateOrientationPrompt);
-
-    if (isSmallLessonViewport()) {
-      orientationModeRequestedRef.current = true;
-      enterLessonLandscape(lessonRootRef.current).finally(updateOrientationPrompt);
-    }
-
-    return () => {
-      active = false;
-      window.removeEventListener("resize", updateOrientationPrompt);
-      window.removeEventListener("orientationchange", updateOrientationPrompt);
-      window.screen?.orientation?.removeEventListener?.("change", updateOrientationPrompt);
-
-      if (orientationModeRequestedRef.current) {
-        orientationModeRequestedRef.current = false;
-        void exitLessonLandscape();
-      }
-    };
-  }, [hasLessonAccess, isCheckingAccess]);
-
-  const handleClose = async () => {
-    if (orientationModeRequestedRef.current) {
-      orientationModeRequestedRef.current = false;
-      await exitLessonLandscape();
-    }
-
+  const handleClose = () => {
     navigateInApp("/learning");
   };
 
-  const createMathPrompt = (label) => {
-    const a = Math.floor(Math.random() * 5) + 2;
-    const b = Math.floor(Math.random() * 4) + 1;
-
-    return { a, answer: a + b, b, label };
-  };
-
-  const requestProtectedAction = (label, action) => {
-    if (!isVideoPlaying) {
-      action();
-      return;
-    }
-
-    pendingActionRef.current = action;
-    setMathPrompt(createMathPrompt(label));
-    setMathAnswerInput("");
-    setMathError("");
-    setIsGateOpen(true);
-  };
-
-  const handleGateClose = () => {
-    pendingActionRef.current = null;
-    setIsGateOpen(false);
-    setMathAnswerInput("");
-    setMathError("");
-  };
-
-  const handleGateSubmit = () => {
-    if (Number(mathAnswerInput) !== mathPrompt.answer) {
-      setMathError("Chưa đúng rồi. Con thử lại nhé.");
-      return;
-    }
-
-    const pendingAction = pendingActionRef.current;
-    handleGateClose();
-    pendingAction?.();
-  };
-
   const handleVideoEnded = () => {
-    setIsVideoPlaying(false);
-
     if (flow.phase === LESSON_PHASES.INTRO) {
       dispatchFlow({ type: "INTRO_ENDED" });
       return;
@@ -230,6 +147,18 @@ export function LessonPage() {
   };
 
   const handleAnswerSelect = (option) => {
+    if (option.result === "wrong") {
+      const correctOption = lessonContent.answerOptions.find((o) => o.result === "correct");
+      saveWrongAnswer({
+        situationId: requestedSituationId,
+        lessonTitle: lessonContent.storyTitle,
+        islandName: lessonContent.worldTitle,
+        questionPrompt: lessonContent.prompt,
+        selectedOptionLabel: option.label,
+        correctOptionLabel: correctOption?.label || "",
+      });
+    }
+
     dispatchFlow({
       type: "ANSWER_SELECTED",
       correctVideoUrl: lessonContent.correctVideoUrl,
@@ -259,12 +188,6 @@ export function LessonPage() {
     }
 
     markSituationCompleted(situationId);
-
-    if (orientationModeRequestedRef.current) {
-      orientationModeRequestedRef.current = false;
-      await exitLessonLandscape();
-    }
-
     navigateInApp("/learning");
   };
 
@@ -274,29 +197,29 @@ export function LessonPage() {
 
   return (
     <div
-      ref={lessonRootRef}
-      className={`lesson-page${
-        showOrientationPrompt ? " lesson-page--orientation-prompt" : ""
-      }`}
+      className={`lesson-page${isMobileFullscreen ? " lesson-page--mobile-fullscreen" : ""}`}
       data-lesson-phase={flow.phase}
     >
       <LessonBackground
         imageUrl={lessonContent.backgroundImage}
         responsiveImageUrl={responsiveLessonBackground}
       />
-      {showOrientationPrompt ? <LessonOrientationPrompt /> : null}
       <div className="lesson-shell">
-        <LessonHeader
-          adventureLabel={lessonContent.adventureLabel}
-          currentStep={currentStep}
-          isDesktop={isDesktop}
-          isMuted={isMuted}
-          onSettings={() => requestProtectedAction("mở cài đặt", () => setIsSettingsOpen(true))}
-          onSound={() => setIsMuted((current) => !current)}
-          totalSteps={3}
-          title={lessonContent.worldTitle}
-          onClose={() => requestProtectedAction("thoát bài học", handleClose)}
-        />
+        {/* Ẩn header khi xem intro/video kết quả trên mobile để video full màn hình */}
+        {!isMobileFullscreen ? (
+          <LessonHeader
+            adventureLabel={lessonContent.adventureLabel}
+            currentStep={currentStep}
+            isDesktop={isDesktop}
+            isMuted={isMuted}
+            onSettings={() => setIsSettingsOpen(true)}
+            onSound={() => setIsMuted((current) => !current)}
+            totalSteps={3}
+            title={lessonContent.worldTitle}
+            onClose={handleClose}
+            hideProgress={flow.phase === LESSON_PHASES.FEEDBACK_WRONG || flow.phase === LESSON_PHASES.FEEDBACK_CORRECT}
+          />
+        ) : null}
         <main
           ref={stageRef}
           className={`lesson-main${isDesktop ? " lesson-main--desktop" : " lesson-main--mobile"}`}
@@ -311,12 +234,11 @@ export function LessonPage() {
                 isDesktop
                 isMuted={isMuted}
                 onRetry={retry}
+                onSkip={handleVideoEnded}
                 onVideoEnded={handleVideoEnded}
-                onVideoPause={() => setIsVideoPlaying(false)}
-                onVideoPlay={() => setIsVideoPlaying(true)}
                 poster={lessonContent.videoPoster}
                 playbackRate={playbackRate}
-                shouldPause={isGateOpen || isSettingsOpen}
+                shouldPause={isSettingsOpen}
                 status={status}
                 storyTitle={lessonContent.storyTitle}
                 takeaway={lessonContent.takeaway}
@@ -328,6 +250,7 @@ export function LessonPage() {
                 canContinue={canContinue}
                 completed={flow.phase === LESSON_PHASES.COMPLETED}
                 introCompleted={desktopAnswersEnabled}
+                isMuted={isMuted}
                 onContinue={handleContinue}
                 onReplay={() => dispatchFlow({ type: "REPLAY_INTRO" })}
                 onAnswerSelect={(option) => {
@@ -341,6 +264,7 @@ export function LessonPage() {
                 }}
                 prompt={lessonContent.prompt}
                 selectedAnswerId={flow.selectedAnswerId}
+                voiceFiles={lessonContent.voiceFiles}
               />
             </>
           ) : null}
@@ -351,12 +275,11 @@ export function LessonPage() {
               instanceKey={flow.videoInstanceKey}
               isMuted={isMuted}
               onRetry={retry}
+              onSkip={handleVideoEnded}
               onVideoEnded={handleVideoEnded}
-              onVideoPause={() => setIsVideoPlaying(false)}
-              onVideoPlay={() => setIsVideoPlaying(true)}
               poster={lessonContent.videoPoster}
               playbackRate={playbackRate}
-              shouldPause={isGateOpen || isSettingsOpen}
+              shouldPause={isSettingsOpen}
               status={status}
               storyTitle={lessonContent.storyTitle}
               takeaway={lessonContent.takeaway}
@@ -367,9 +290,11 @@ export function LessonPage() {
           {!isDesktop && flow.phase === LESSON_PHASES.QUESTION ? (
             <LessonQuestionStage
               answerOptions={lessonContent.answerOptions}
+              isMuted={isMuted}
               onAnswerSelect={handleAnswerSelect}
               poster={lessonContent.videoPoster}
               prompt={lessonContent.prompt}
+              voiceFiles={lessonContent.voiceFiles}
             />
           ) : null}
 
@@ -382,15 +307,15 @@ export function LessonPage() {
               feedbackText={selectedOption?.feedback}
               instanceKey={flow.videoInstanceKey}
               isMuted={isMuted}
+              isDesktop={isDesktop}
               onReplayIntro={() => dispatchFlow({ type: "REPLAY_INTRO" })}
               onRetry={retry}
               onRetryAnswer={() => dispatchFlow({ type: "TRY_AGAIN" })}
+              onSkip={handleVideoEnded}
               onVideoEnded={handleVideoEnded}
-              onVideoPause={() => setIsVideoPlaying(false)}
-              onVideoPlay={() => setIsVideoPlaying(true)}
               poster={lessonContent.videoPoster}
               playbackRate={playbackRate}
-              shouldPause={isGateOpen || isSettingsOpen}
+              shouldPause={isSettingsOpen}
               status={status}
               videoUrl={currentVideoUrl}
             />
@@ -405,41 +330,6 @@ export function LessonPage() {
         </main>
       </div>
 
-      <Modal open={isGateOpen} onClose={handleGateClose} className="lesson-gate-modal">
-        <div className="lesson-gate-modal__header">
-          <LockKey size={28} weight="fill" />
-          <div>
-            <h2>Trả lời câu đố để tiếp tục</h2>
-            <p>Con hãy tính thật nhanh để {mathPrompt.label}.</p>
-          </div>
-        </div>
-        <div className="lesson-gate-modal__question">
-          {mathPrompt.a} + {mathPrompt.b} = ?
-        </div>
-        <input
-          type="text"
-          inputMode="numeric"
-          value={mathAnswerInput}
-          onChange={(event) => setMathAnswerInput(event.target.value.replace(/[^\d-]/g, ""))}
-          className="lesson-gate-modal__input"
-          placeholder="Nhập đáp án"
-        />
-        {mathError ? <p className="lesson-gate-modal__error">{mathError}</p> : null}
-        <div className="lesson-gate-modal__actions">
-          <button
-            type="button"
-            className="lesson-gate-modal__button lesson-gate-modal__button--ghost"
-            onClick={handleGateClose}
-          >
-            <XCircle size={18} weight="fill" />
-            Hủy
-          </button>
-          <button type="button" className="lesson-gate-modal__button" onClick={handleGateSubmit}>
-            <CheckCircle size={18} weight="fill" />
-            Xác nhận
-          </button>
-        </div>
-      </Modal>
 
       <Modal
         open={isSettingsOpen}

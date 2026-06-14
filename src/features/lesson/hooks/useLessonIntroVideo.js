@@ -38,13 +38,17 @@ export function useLessonIntroVideo() {
       );
 
       if (!introStep) {
-        throw new Error("Bài học chưa có video mở đầu.");
+        const err = new Error("Nội dung video của bài học này đang được cập nhật.");
+        err.code = "UNDER_DEVELOPMENT";
+        throw err;
       }
 
       const signedMedia = await createSignedMediaUrl(introStep.stepId);
 
       if (!signedMedia?.signedUrl) {
-        throw new Error("Máy chủ không trả về đường dẫn video.");
+        const err = new Error("Máy chủ không trả về đường dẫn video.");
+        err.code = "UNDER_DEVELOPMENT";
+        throw err;
       }
 
       setLesson(situation);

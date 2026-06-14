@@ -4,12 +4,18 @@ import { VideoLessonCard } from "./VideoLessonCard";
 export function LessonFeedbackStage({
   feedbackComplete,
   feedbackText,
+  isDesktop = false,
   onReplayIntro,
   onRetryAnswer,
   ...videoProps
 }) {
+  const showFullscreen = !isDesktop && !feedbackComplete;
+
   return (
-    <section className="lesson-stage lesson-feedback-stage" aria-label="Kết quả lựa chọn">
+    <section
+      className={`lesson-stage lesson-feedback-stage${showFullscreen ? " lesson-stage--mobile-fullscreen" : ""}`}
+      aria-label="Kết quả lựa chọn"
+    >
       <VideoLessonCard playPromptMode="hidden" {...videoProps} />
 
       {feedbackComplete ? (

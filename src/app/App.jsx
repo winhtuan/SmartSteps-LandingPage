@@ -3,6 +3,7 @@ import { isAuthenticated } from "../features/auth/services/authApi";
 import { LandingPage } from "../features/landing/pages/LandingPage";
 import { LearningMapPage } from "../features/learning/pages/LearningMapPage";
 import { LessonPage } from "../features/lesson/pages/LessonPage";
+import { ReviewPage } from "../features/review/pages/ReviewPage";
 import "./App.css";
 
 export default function App() {
@@ -16,7 +17,7 @@ export default function App() {
   }, []);
 
   const onProtectedRoute =
-    pathname.startsWith("/lesson") || pathname.startsWith("/learning");
+    pathname.startsWith("/lesson") || pathname.startsWith("/learning") || pathname.startsWith("/review");
 
   if (onProtectedRoute && !isAuthenticated()) {
     window.history.replaceState({}, "", "/");
@@ -29,6 +30,10 @@ export default function App() {
 
   if (pathname.startsWith("/learning")) {
     return <LearningMapPage />;
+  }
+
+  if (pathname.startsWith("/review")) {
+    return <ReviewPage />;
   }
 
   return <LandingPage />;

@@ -13,6 +13,7 @@ import {
   Medal,
   Play,
   UserCircle,
+  FastForward,
 } from "@phosphor-icons/react";
 import mascotConfident from "../../../assets/images/mascot/mascot-cat-confident.png";
 import mascotHappy from "../../../assets/images/mascot/mascot-cat-happy-wave.png";
@@ -35,10 +36,10 @@ import { learnerProfile, learningStats } from "../data/learningMapContent";
 import { LearningMapProvider, useLearningMap } from "../providers/LearningMapProvider";
 
 const navItems = [
-  { label: "Học", Icon: House, active: true },
-  { label: "Các đảo", Icon: MapTrifold, active: false },
-  { label: "Ôn tập", Icon: BookOpen, active: false },
-  { label: "Hồ sơ", Icon: UserCircle, active: false },
+  { label: "Học", Icon: House, path: "/learning", active: true },
+  { label: "Các đảo", Icon: MapTrifold, path: "/learning", active: false },
+  { label: "Ôn tập", Icon: BookOpen, path: "/review", active: false },
+  { label: "Hồ sơ", Icon: UserCircle, path: "/review", active: false },
 ];
 
 const stateIcon = {
@@ -134,6 +135,7 @@ function LearningMapView() {
           <LearningInsightPanel island={selectedIsland} lesson={currentLesson} />
         </div>
       </main>
+      <MobileBottomNav />
       <AuthSidebar
         language={language}
         mode={authMode}
@@ -239,10 +241,11 @@ function LearningSidebar() {
   return (
     <aside className="fade-up hidden rounded-[2rem] border border-green-100 bg-white/90 p-3 shadow-sm xl:block">
       <nav className="space-y-2">
-        {navItems.map(({ label, Icon, active }) => (
+        {navItems.map(({ label, Icon, path, active }) => (
           <button
             key={label}
             type="button"
+            onClick={() => navigateInApp(path)}
             className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-extrabold transition ${
               active
                 ? "bg-green-100 text-green-700"
@@ -783,7 +786,9 @@ function LockedIslandPreview({
   onSelect,
 }) {
   const pathDirection = getPathDirection(islandIndex);
+  // The first node lets the user select the island, the rest show premium modal
   const lockedItems = ["skip", "lock", "chest", "lock", "reward"];
+  const premiumLesson = { islandId: island.islandId, orderIndex: island.orderIndex, title: islandName };
 
   return (
     <div className="relative mx-auto mt-20 max-w-[34rem]" style={{ height: "35rem" }}>
@@ -801,14 +806,10 @@ function LockedIslandPreview({
             index={index}
             islandName={islandName}
             key={`${item}-${index}`}
-            onSelect={() =>
-              item === "skip"
-                ? onLockedLessonSelect?.({
-                    islandId: island.islandId,
-                    orderIndex: island.orderIndex,
-                    title: islandName,
-                  })
-                : onSelect(island.islandId)
+            onSelect={
+              index === 0 
+                ? () => onSelect?.(island.islandId) 
+                : () => onLockedLessonSelect?.(premiumLesson)
             }
             pathDirection={pathDirection}
             totalItems={lockedItems.length}
@@ -821,9 +822,11 @@ function LockedIslandPreview({
 
 function LockedPreviewNode({ index, islandName, onSelect, pathDirection, totalItems, type }) {
   const position = getPathPosition(pathDirection, index, totalItems);
+  const isCta = type === "cta";
   const isSkip = type === "skip";
   const isChest = type === "chest";
   const isReward = type === "reward";
+
   return (
     <article
       className="absolute z-20"
@@ -833,29 +836,33 @@ function LockedPreviewNode({ index, islandName, onSelect, pathDirection, totalIt
         transform: "translate(-50%, -50%)",
       }}
     >
-      {isSkip ? (
-        <button
-          type="button"
-          onClick={onSelect}
-          aria-label={`Học vượt ${islandName}`}
-          className="learning-action-node learning-action-node--skip group relative mx-auto flex h-[5.25rem] w-[5.25rem] items-center justify-center rounded-full border-[6px] border-white bg-violet-400 text-white shadow-[0_8px_0_#a855f7] transition duration-300 hover:-translate-y-1 hover:bg-violet-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-200 focus-visible:ring-offset-4"
-        >
-          <LearningActionCallout label="Học vượt?" tone="skip" />
-          <Play size={34} weight="fill" />
-        </button>
-      ) : (
-        <span
-          className={`mx-auto inline-flex h-[5.25rem] w-[5.25rem] items-center justify-center border-[6px] border-white bg-slate-100 text-slate-300 shadow-[0_8px_0_#d7e1dc] ${
-            isChest ? "rounded-[1.4rem]" : "rounded-full"
-          }`}
-        >
-          {isReward ? (
-            <Medal size={30} weight="duotone" />
-          ) : (
-            <Lock size={isChest ? 24 : 30} weight="duotone" />
-          )}
-        </span>
-      )}
+      <button
+        type="button"
+        onClick={onSelect}
+        aria-label={isSkip ? `Xem đảo ${islandName}` : `Mở khóa ${islandName} với gói PRO`}
+        className={`group relative mx-auto flex h-[5.25rem] w-[5.25rem] items-center justify-center border-[6px] border-white transition duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-200 focus-visible:ring-offset-4 ${
+          isSkip
+            ? "learning-action-node learning-action-node--skip rounded-full bg-slate-100 text-slate-400 shadow-[0_8px_0_#cbd5e1] hover:bg-slate-50 hover:text-slate-500"
+            : isCta
+            ? "learning-action-node learning-action-node--skip rounded-full bg-violet-400 text-white shadow-[0_8px_0_#a855f7] hover:bg-violet-300"
+            : isChest
+            ? "rounded-[1.4rem] bg-violet-100 text-violet-500 shadow-[0_8px_0_#d9c8ff] hover:bg-violet-50"
+            : "rounded-full bg-violet-100 text-violet-500 shadow-[0_8px_0_#d9c8ff] hover:bg-violet-50"
+        }`}
+      >
+        {isSkip && <LearningActionCallout label="Xem đảo" tone="skip" />}
+        {isCta && <LearningActionCallout label="Mở khóa?" tone="skip" />}
+        
+        {isReward ? (
+          <Medal size={28} weight="duotone" />
+        ) : isSkip ? (
+          <FastForward size={30} weight="fill" />
+        ) : isCta ? (
+          <img src={planProIcon} alt="" aria-hidden="true" className="h-9 w-9 object-contain brightness-[10]" />
+        ) : (
+          <Lock size={isChest ? 24 : 30} weight="duotone" />
+        )}
+      </button>
     </article>
   );
 }
@@ -949,4 +956,35 @@ function StatCard({ label, value, tone }) {
   );
 }
 
-
+function MobileBottomNav() {
+  return (
+    <nav
+      aria-label="Điều hướng chính"
+      className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-yellow-100 bg-[#fffdf7]/95 px-2 py-2 backdrop-blur-lg xl:hidden"
+    >
+      {navItems.map(({ label, Icon, path, active }) => (
+        <button
+          key={label}
+          type="button"
+          onClick={() => navigateInApp(path)}
+          aria-label={label}
+          aria-current={active ? "page" : undefined}
+          className={`flex flex-col items-center gap-0.5 rounded-2xl px-3 py-2 text-[0.65rem] font-black transition ${
+            active
+              ? "text-green-700"
+              : "text-slate-400 hover:text-green-700"
+          }`}
+        >
+          <span
+            className={`flex h-8 w-8 items-center justify-center rounded-xl transition ${
+              active ? "bg-green-100" : "bg-transparent"
+            }`}
+          >
+            <Icon size={20} weight={active ? "fill" : "duotone"} />
+          </span>
+          {label}
+        </button>
+      ))}
+    </nav>
+  );
+}

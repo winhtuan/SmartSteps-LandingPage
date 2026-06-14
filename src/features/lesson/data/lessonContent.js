@@ -1,3 +1,13 @@
+import crossroadQuestion from "../../../assets/media/voices/Crossroad/Question.mp3";
+import crossroadCorrect from "../../../assets/media/voices/Crossroad/correct.mp3";
+import crossroadWrong from "../../../assets/media/voices/Crossroad/wrong.mp3";
+import smallitemsQuestion from "../../../assets/media/voices/Safety_smallitems/question.mp3";
+import smallitemsChoiceAdult from "../../../assets/media/voices/Safety_smallitems/choice-ask-adult.mp3";
+import smallitemsChoiceMouth from "../../../assets/media/voices/Safety_smallitems/choice-put-mouth.mp3";
+import safetyStrangerQuestion from "../../../assets/media/voices/Safety_stranger/question_l3.mp3";
+import safetyStrangerCorrect from "../../../assets/media/voices/Safety_stranger/correct_l3.mp3";
+import safetyStrangerWrong from "../../../assets/media/voices/Safety_stranger/wrong_l3.mp3";
+
 const DEFAULT_BACKGROUND_IMAGE =
   "https://lh3.googleusercontent.com/aida/AP1WRLuDehCcKNXypLmQGwQOVrUPeSZyYNbtDFn__bItjuMrs3WynSrPwRiRGNn5pAUW0OjO9ilXusjXcGD5G0JSJDatoT0Vc_rMhB4pv4RNyMNeDCQ0R0fZ3SPD36W1eftQTTBpqRAiC3sF6sB9lAhKkeJoE-XXX9sziJc4EQrpH3dMK5mlXiSpAf4FyHlqPHLVzEIuZhRfwRwNMT3Hur9PE4Zr6BWeH3-aFv50reIUnOEx5WTFXPAvxF6CST_2";
 
@@ -13,6 +23,14 @@ function buildCloudinaryVideoUrl(publicId) {
   return `${CLOUDINARY_VIDEO_BASE_URL}/${publicId}`;
 }
 
+/**
+ * voiceFiles: {
+ *   question: <url>,      // đọc câu hỏi
+ *   choices: {            // key = option.id
+ *     [optionId]: <url>
+ *   }
+ * }
+ */
 const lessonConfigBySituationId = {
   1: {
     worldTitle: DEFAULT_WORLD_TITLE,
@@ -29,12 +47,20 @@ const lessonConfigBySituationId = {
     correctVideoUrl: buildCloudinaryVideoUrl("Safety_smallitems_correct_u5ubla.mp4"),
     wrongVideoUrl:
       "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136866/Safety_smallitems_wrong_pjogba.mp4",
+    voiceFiles: {
+      question: smallitemsQuestion,
+      choices: {
+        adult: smallitemsChoiceAdult,
+        eat: smallitemsChoiceMouth,
+      },
+    },
     answerOptions: [
       {
         id: "adult",
         label: "Đưa cho người lớn",
         icon: "adult",
         result: "correct",
+        image: "https://res.cloudinary.com/dtm5a4bwr/video/upload/so_0/Safety_smallitems_correct_u5ubla.jpg",
         feedback: "Đúng rồi. Con nên đưa vật lạ cho người lớn kiểm tra.",
       },
       {
@@ -42,13 +68,14 @@ const lessonConfigBySituationId = {
         label: "Nhặt lên và ăn thử",
         icon: "danger",
         result: "wrong",
+        image: "https://res.cloudinary.com/dtm5a4bwr/video/upload/so_0/Safety_smallitems_wrong_pjogba.jpg",
         feedback: "Vật lạ có thể làm con bị hóc. Hãy nhờ người lớn giúp nhé.",
       },
     ],
   },
-  2: {
+  4: {
     worldTitle: DEFAULT_WORLD_TITLE,
-    adventureLabel: "Bài 2 • Qua đường ở ngã tư",
+    adventureLabel: "Bài 1 • Qua đường ở ngã tư",
     storyTitle: "Qua đường an toàn",
     prompt: "Khi qua đường ở ngã tư, con nên làm gì trước?",
     mapTitle: "Qua đường an toàn",
@@ -60,12 +87,20 @@ const lessonConfigBySituationId = {
       "https://res.cloudinary.com/dtm5a4bwr/video/upload/v1781136588/cross-road-intro_tnrhmy.mp4",
     correctVideoUrl: buildCloudinaryVideoUrl("cross-road-correct_r36izw.mp4"),
     wrongVideoUrl: buildCloudinaryVideoUrl("cross-road-wrong_fnc8fg.mp4"),
+    voiceFiles: {
+      question: crossroadQuestion,
+      choices: {
+        "wait-and-look": crossroadCorrect,
+        "run-fast": crossroadWrong,
+      },
+    },
     answerOptions: [
       {
         id: "wait-and-look",
         label: "Dừng lại, nhìn đèn và nắm tay người lớn",
         icon: "adult",
         result: "correct",
+        image: "https://res.cloudinary.com/dtm5a4bwr/video/upload/so_0/cross-road-correct_r36izw.jpg",
         feedback: "Đúng rồi. Con cần chờ an toàn rồi mới qua đường cùng người lớn.",
       },
       {
@@ -73,10 +108,13 @@ const lessonConfigBySituationId = {
         label: "Chạy thật nhanh sang bên kia",
         icon: "danger",
         result: "wrong",
+        image: "https://res.cloudinary.com/dtm5a4bwr/video/upload/so_0/cross-road-wrong_fnc8fg.jpg",
         feedback: "Chưa an toàn. Chạy vội qua đường rất dễ gặp xe đang tới gần.",
       },
     ],
   },
+  // Safety_stranger voices available for future use:
+  // safetyStrangerQuestion, safetyStrangerCorrect, safetyStrangerWrong
 };
 
 export function getLessonContent(situationId, lesson = null) {
@@ -84,7 +122,7 @@ export function getLessonContent(situationId, lesson = null) {
   const config = lessonConfigBySituationId[normalizedSituationId] || {};
   const titleFromLesson = String(lesson?.title || "").trim();
   const fallbackStoryTitle =
-    titleFromLesson.replace(/^Bài\s*\d+\s*[:.\-–—]?\s*/iu, "").trim() || titleFromLesson;
+    titleFromLesson.replace(/^Bài\s*\d+\s*[:.\\-–—]?\s*/iu, "").trim() || titleFromLesson;
 
   return {
     worldTitle: config.worldTitle || DEFAULT_WORLD_TITLE,
@@ -99,6 +137,7 @@ export function getLessonContent(situationId, lesson = null) {
     introVideoUrl: config.introVideoUrl || "",
     correctVideoUrl: config.correctVideoUrl || "",
     wrongVideoUrl: config.wrongVideoUrl || "",
+    voiceFiles: config.voiceFiles || null,
     answerOptions: config.answerOptions || lessonConfigBySituationId[1].answerOptions,
   };
 }
@@ -137,3 +176,6 @@ export function getRequestedSituationId() {
 function buildAdventureLabel(orderIndex, storyTitle) {
   return storyTitle ? `Bài ${orderIndex} • ${storyTitle}` : `Bài ${orderIndex}`;
 }
+
+// Re-export safety stranger voices for potential future usage
+export { safetyStrangerQuestion, safetyStrangerCorrect, safetyStrangerWrong };

@@ -1,4 +1,6 @@
-import { Circle, SealCheck, WarningCircle } from "@phosphor-icons/react";
+import { Circle, SealCheck, SpeakerHigh, WarningCircle } from "@phosphor-icons/react";
+import { useEffect, useRef, useState } from "react";
+import { useTextToSpeech } from "../hooks/useTextToSpeech";
 import { LessonCTA } from "./LessonCTA";
 import { MascotQuestion } from "./MascotQuestion";
 
@@ -20,12 +22,48 @@ export function LessonSidePanel({
   canContinue,
   completed,
   introCompleted,
+  isMuted,
   onContinue,
   onReplay,
   onAnswerSelect,
   prompt,
   selectedAnswerId,
+  voiceFiles,
 }) {
+  const confirmedRef = useRef(false);
+  const [highlightedAnswerId, setHighlightedAnswerId] = useState("");
+  const { speak, speakSequence, cancel } = useTextToSpeech(!isMuted);
+
+  // Khi intro hoàn thành → reset trạng thái + tự động đọc câu hỏi & đáp án
+  useEffect(() => {
+    if (!introCompleted) return;
+
+    confirmedRef.current = false;
+    setHighlightedAnswerId("");
+
+    if (!voiceFiles) return;
+
+    const srcs = [
+      voiceFiles.question,
+      ...answerOptions.map((o) => voiceFiles.choices?.[o.id]).filter(Boolean),
+    ].filter(Boolean);
+
+    if (!srcs.length) return;
+
+    const timer = window.setTimeout(() => speakSequence(srcs, 500), 400);
+    return () => {
+      window.clearTimeout(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [introCompleted]);
+
+  // Huỷ TTS khi đã chọn xong
+  useEffect(() => {
+    if (selectedAnswerId) {
+      cancel();
+    }
+  }, [selectedAnswerId, cancel]);
+
   const answerFeedback =
     answerState === "correct"
       ? {
@@ -45,6 +83,28 @@ export function LessonSidePanel({
               type: "muted",
             };
 
+  const handleAnswerClick = (option) => {
+    if (!introCompleted || selectedAnswerId) return;
+
+    // Lần 2: đã highlight đúng option này → xác nhận chọn
+    if (highlightedAnswerId === option.id) {
+      if (confirmedRef.current) return;
+      confirmedRef.current = true;
+      cancel();
+      onAnswerSelect(option);
+      return;
+    }
+
+    // Lần 1: highlight + phát MP3 của đáp án
+    setHighlightedAnswerId(option.id);
+    const choiceSrc = voiceFiles?.choices?.[option.id];
+    if (choiceSrc) {
+      speak(choiceSrc);
+    } else {
+      cancel();
+    }
+  };
+
   return (
     <aside className="lesson-side-panel" aria-labelledby="lesson-side-panel-question-title">
       <section className="lesson-side-card lesson-side-card--question">
@@ -58,13 +118,21 @@ export function LessonSidePanel({
         <h3>Con sẽ làm gì?</h3>
         <div className="lesson-answer-grid">
           {answerOptions.map((option) => {
-            const selected = selectedAnswerId === option.id;
+            const isConfirmed = selectedAnswerId === option.id;
+            const isHighlighted = !isConfirmed && highlightedAnswerId === option.id;
+            const isOtherHighlighted =
+              !isConfirmed && highlightedAnswerId && highlightedAnswerId !== option.id;
+
             const stateClass =
-              selected && option.result === "correct"
+              isConfirmed && option.result === "correct"
                 ? "lesson-answer-card--correct"
-                : selected && option.result === "wrong"
+                : isConfirmed && option.result === "wrong"
                   ? "lesson-answer-card--wrong"
-                  : "";
+                  : isHighlighted
+                    ? "lesson-answer-card--highlighted"
+                    : isOtherHighlighted
+                      ? "lesson-answer-card--dimmed"
+                      : "";
 
             return (
               <button
@@ -72,14 +140,20 @@ export function LessonSidePanel({
                 type="button"
                 className={`lesson-answer-card ${stateClass}`.trim()}
                 disabled={!introCompleted}
-                onClick={() => onAnswerSelect(option)}
+                onClick={() => handleAnswerClick(option)}
               >
                 <span className="lesson-answer-card__icon" aria-hidden="true">
-                  <AnswerIcon selected={selected} state={option.result} />
+                  <AnswerIcon selected={isConfirmed} state={option.result} />
                 </span>
                 <span className="lesson-answer-card__content">
                   <strong>{option.label}</strong>
-                  {selected ? <span>{option.feedback}</span> : null}
+                  {isConfirmed ? <span>{option.feedback}</span> : null}
+                  {isHighlighted ? (
+                    <span className="lesson-answer-card__tap-hint">
+                      <SpeakerHigh size={12} weight="fill" />
+                      Nhấn lần nữa để chọn
+                    </span>
+                  ) : null}
                 </span>
               </button>
             );

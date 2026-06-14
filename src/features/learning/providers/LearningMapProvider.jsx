@@ -17,6 +17,7 @@ import {
   savePremiumAccount,
 } from "../../premium/services/premiumApi";
 import { getCompletedSituationIds } from "../services/learningProgress";
+import { doesSituationRequirePremium } from "../../premium/utils/premiumAccess";
 
 const islandTones = [
   "bg-green-100 text-green-700",
@@ -332,31 +333,29 @@ function applySituationAccess(situations, hasPremium, completedSituationIds) {
   return situations.map((situation, index) => {
     const completed = completedSituationIdSet.has(Number(situation.situationId));
     const requiresPremium = doesSituationRequirePremium(situation);
-    const unlockedByProgress = index <= contiguousCompletedCount;
-    const unlocked = unlockedByProgress && (!requiresPremium || hasPremium);
-    const current =
-      !completed &&
-      unlocked &&
-      (firstIncompleteIndex === -1 ? index === situations.length - 1 : index === firstIncompleteIndex);
-    const premiumLocked =
-      !completed &&
-      requiresPremium &&
-      !hasPremium &&
-      unlockedByProgress &&
-      (firstIncompleteIndex === -1 ? index === situations.length - 1 : index === firstIncompleteIndex);
 
-    return {
-      ...situation,
-      state: completed
-        ? "open"
-        : current
-          ? "current"
-          : premiumLocked
-            ? "premium_locked"
-            : unlocked
-              ? "open"
-              : "locked",
-    };
+    if (completed) {
+      return { ...situation, state: "open" };
+    }
+
+    // All premium lessons are visually marked as premium_locked when user has no premium,
+    // so clicking any of them shows the upgrade modal.
+    if (requiresPremium && !hasPremium) {
+      return { ...situation, state: "premium_locked" };
+    }
+
+    const unlockedByProgress = index <= contiguousCompletedCount;
+
+    if (!unlockedByProgress) {
+      return { ...situation, state: "locked" };
+    }
+
+    const isCurrent =
+      firstIncompleteIndex === -1
+        ? index === situations.length - 1
+        : index === firstIncompleteIndex;
+
+    return { ...situation, state: isCurrent ? "current" : "open" };
   });
 }
 
@@ -402,6 +401,3 @@ function applySituationPresentationOverride(situation) {
   };
 }
 
-function doesSituationRequirePremium(situation) {
-  return Number(situation?.situationId) === 3;
-}

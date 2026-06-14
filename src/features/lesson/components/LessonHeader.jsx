@@ -23,6 +23,7 @@ export function LessonHeader({
   onSound,
   title,
   totalSteps,
+  hideProgress = false,
 }) {
   if (isDesktop) {
     return (
@@ -66,16 +67,18 @@ export function LessonHeader({
 
       <div className="lesson-header__lesson">
         <h1>{adventureLabel}</h1>
-        <div
-          className="lesson-header__progress"
-          role="progressbar"
-          aria-label="Tiến trình bài học"
-          aria-valuemin="1"
-          aria-valuemax={totalSteps}
-          aria-valuenow={currentStep}
-        >
-          <span style={{ width: `${progress}%` }} />
-        </div>
+        {!hideProgress && (
+          <div
+            className="lesson-header__progress"
+            role="progressbar"
+            aria-label="Tiến trình bài học"
+            aria-valuemin="1"
+            aria-valuemax={totalSteps}
+            aria-valuenow={currentStep}
+          >
+            <span style={{ width: `${progress}%` }} />
+          </div>
+        )}
       </div>
 
       <div className="lesson-header__actions">
