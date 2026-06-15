@@ -26,6 +26,14 @@ import {
 } from "../state/lessonFlow";
 import "../styles/lesson.css";
 
+// Import audio assets
+import crowdCheerAudio from "../../../assets/media/audio/crowd_cheer.mp3";
+import wrongAnswerAudio from "../../../assets/media/audio/wrongAnswer.mp3";
+
+// Import feedback components
+import { FireworksCanvas } from "../components/FireworksCanvas";
+import { WrongAnswerAlert } from "../components/WrongAnswerAlert";
+
 export function LessonPage() {
   const { error, lesson, requestedSituationId, retry, status, videoUrl } = useLessonIntroVideo();
   const isDesktop = useDesktopLessonLayout();
@@ -37,6 +45,17 @@ export function LessonPage() {
   const [playbackRate, setPlaybackRate] = useState(1);
   const stageRef = useRef(null);
   const lessonContent = getLessonContent(requestedSituationId, lesson);
+
+  const [showFireworks, setShowFireworks] = useState(false);
+  const audioRef = useRef(null);
+
+  const stopFeedbackAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+  };
 
   const canContinue = flow.phase === LESSON_PHASES.COMPLETED;
   const currentVideoUrl = flow.feedbackVideoUrl || videoUrl;
@@ -60,6 +79,38 @@ export function LessonPage() {
     flow.phase === LESSON_PHASES.QUESTION ||
     ((flow.phase === LESSON_PHASES.FEEDBACK_WRONG || flow.phase === LESSON_PHASES.FEEDBACK_CORRECT) && !flow.feedbackComplete)
   );
+
+  // Phát nhạc chúc mừng / chọn sai & bật hiệu ứng tương ứng sau khi xem xong video kết quả
+  useEffect(() => {
+    stopFeedbackAudio();
+
+    const isCorrectAndEnded = flow.phase === LESSON_PHASES.COMPLETED;
+    const isWrongAndEnded = flow.phase === LESSON_PHASES.FEEDBACK_WRONG && flow.feedbackComplete;
+
+    if (isCorrectAndEnded) {
+      setShowFireworks(true);
+      if (!isMuted) {
+        const audio = new Audio(crowdCheerAudio);
+        audio.volume = 0.75;
+        audioRef.current = audio;
+        audio.play().catch(() => {});
+      }
+    } else if (isWrongAndEnded) {
+      setShowFireworks(false);
+      if (!isMuted) {
+        const audio = new Audio(wrongAnswerAudio);
+        audio.volume = 0.75;
+        audioRef.current = audio;
+        audio.play().catch(() => {});
+      }
+    } else {
+      setShowFireworks(false);
+    }
+
+    return () => {
+      stopFeedbackAudio();
+    };
+  }, [flow.phase, flow.feedbackComplete, isMuted]);
 
   useEffect(() => {
     let ignore = false;
@@ -134,6 +185,7 @@ export function LessonPage() {
   }, [flow.phase]);
 
   const handleClose = () => {
+    stopFeedbackAudio();
     navigateInApp("/learning");
   };
 
@@ -172,6 +224,8 @@ export function LessonPage() {
       return;
     }
 
+    stopFeedbackAudio();
+
     const situationId = Number(lesson?.situationId);
     const session = getAuthSession();
 
@@ -195,9 +249,13 @@ export function LessonPage() {
     return null;
   }
 
+  const isWarningActive = flow.phase === LESSON_PHASES.FEEDBACK_WRONG && flow.feedbackComplete;
+
   return (
     <div
-      className={`lesson-page${isMobileFullscreen ? " lesson-page--mobile-fullscreen" : ""}`}
+      className={`lesson-page${isMobileFullscreen ? " lesson-page--mobile-fullscreen" : ""}${
+        isWarningActive ? " lesson-page--warning-active" : ""
+      }`}
       data-lesson-phase={flow.phase}
     >
       <LessonBackground
@@ -330,7 +388,6 @@ export function LessonPage() {
         </main>
       </div>
 
-
       <Modal
         open={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
@@ -366,6 +423,16 @@ export function LessonPage() {
           Xong
         </button>
       </Modal>
+
+      {/* Celebration Fireworks Canvas */}
+      {showFireworks && <FireworksCanvas />}
+
+      <WrongAnswerAlert
+        open={flow.phase === LESSON_PHASES.FEEDBACK_WRONG && flow.feedbackComplete}
+        feedbackText={selectedOption?.feedback}
+        onRetry={() => dispatchFlow({ type: "TRY_AGAIN" })}
+        onReplayIntro={() => dispatchFlow({ type: "REPLAY_INTRO" })}
+      />
     </div>
   );
 }

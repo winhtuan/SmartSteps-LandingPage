@@ -53,8 +53,12 @@ export function useTextToSpeech(enabled = true) {
    * Phát lần lượt một mảng file âm thanh với khoảng dừng giữa các file.
    * @param {string[]} srcs  - Mảng đường dẫn file MP3
    * @param {number}   pauseMs - Thời gian dừng giữa hai file (ms)
+   * @param {object}   [opts] - Tuỳ chọn bổ sung
+   * @param {(index: number) => void} [opts.onItemStart] - Gọi khi bắt đầu phát item thứ index
+   * @param {() => void} [opts.onSequenceEnd] - Gọi khi chuỗi phát xong hoàn toàn
    */
-  const speakSequence = useCallback((srcs, pauseMs = 600) => {
+  const speakSequence = useCallback((srcs, pauseMs = 600, opts = {}) => {
+    const { onItemStart, onSequenceEnd } = opts;
     if (!enabledRef.current || !srcs?.length) return;
 
     // Dừng âm thanh đang phát
@@ -66,10 +70,20 @@ export function useTextToSpeech(enabled = true) {
     cancelledRef.current = false;
     let currentIndex = 0;
 
+    const finish = () => {
+      if (!cancelledRef.current && onSequenceEnd) {
+        onSequenceEnd();
+      }
+    };
+
     const playNext = () => {
-      if (cancelledRef.current || currentIndex >= srcs.length) return;
+      if (cancelledRef.current || currentIndex >= srcs.length) {
+        finish();
+        return;
+      }
 
       const src = srcs[currentIndex];
+      const itemIndex = currentIndex;
       currentIndex++;
 
       if (!src) {
@@ -78,12 +92,18 @@ export function useTextToSpeech(enabled = true) {
         return;
       }
 
+      if (onItemStart) {
+        onItemStart(itemIndex);
+      }
+
       const audio = new Audio(src);
       audioRef.current = audio;
 
       audio.onended = () => {
         if (!cancelledRef.current && currentIndex < srcs.length) {
           setTimeout(playNext, pauseMs);
+        } else {
+          finish();
         }
       };
 
@@ -91,6 +111,8 @@ export function useTextToSpeech(enabled = true) {
         // Nếu file lỗi, tiếp tục với file tiếp theo
         if (!cancelledRef.current && currentIndex < srcs.length) {
           setTimeout(playNext, pauseMs);
+        } else {
+          finish();
         }
       };
 
@@ -98,6 +120,8 @@ export function useTextToSpeech(enabled = true) {
         // Autoplay bị chặn - thử file tiếp
         if (!cancelledRef.current && currentIndex < srcs.length) {
           setTimeout(playNext, pauseMs);
+        } else {
+          finish();
         }
       });
     };

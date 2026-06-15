@@ -350,7 +350,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: var(--video-position, center center);
 }
 
@@ -1989,6 +1989,7 @@
   inset: 0;
   border-radius: 0;
   background: #000;
+  overflow: visible;
 }
 
 .lesson-stage--mobile-fullscreen .lesson-video__media {
@@ -2118,7 +2119,11 @@
   background: rgba(255, 250, 236, 0.97);
   padding: clamp(0.6rem, 2vw, 1rem) clamp(0.9rem, 2.5vw, 1.4rem);
   color: #4a3800;
+  font: inherit;
   box-shadow: 0 10px 28px rgba(10, 32, 18, 0.28);
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
 }
 
 .lesson-flashcard-stage__bubble::before {
@@ -2152,6 +2157,108 @@
   font-size: clamp(1rem, 2.8vw, 1.55rem);
   font-weight: 900;
   line-height: 1.2;
+}
+
+/* --- Tappable question bubble (button reset) --- */
+.lesson-flashcard-stage__bubble--tappable {
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 220ms ease, box-shadow 220ms ease, transform 180ms ease;
+}
+
+.lesson-flashcard-stage__bubble--tappable:hover {
+  border-color: rgba(255, 230, 120, 0.95);
+  box-shadow: 0 12px 32px rgba(10, 32, 18, 0.32);
+  transform: translateY(-1px);
+}
+
+.lesson-flashcard-stage__bubble--tappable:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 18px rgba(10, 32, 18, 0.22);
+}
+
+.lesson-flashcard-stage__bubble--tappable:focus-visible {
+  outline: 3px solid #ffe066;
+  outline-offset: 3px;
+}
+
+/* --- Reading highlight on question bubble --- */
+.lesson-flashcard-stage__bubble--reading {
+  border-color: #ff9800 !important;
+  border-width: 3.5px !important;
+  background: #fff9c4 !important;
+  animation: lesson-reading-pulse-bubble 1.0s ease-in-out infinite;
+  z-index: 5;
+}
+
+.lesson-flashcard-stage__bubble--reading::before {
+  border-left-color: #ff9800 !important;
+  border-bottom-color: #ff9800 !important;
+  border-left-width: 3.5px !important;
+  border-bottom-width: 3.5px !important;
+  background: #fff9c4 !important;
+}
+
+/* --- Speaker icon trong eyebrow --- */
+.lesson-flashcard-stage__speaker-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.35rem;
+  opacity: 0.55;
+  transition: opacity 180ms ease, color 180ms ease;
+}
+
+.lesson-flashcard-stage__bubble--tappable:hover .lesson-flashcard-stage__speaker-icon {
+  opacity: 1;
+}
+
+.lesson-flashcard-stage__bubble--reading .lesson-flashcard-stage__speaker-icon {
+  opacity: 1;
+  color: #e65100;
+  animation: lesson-speaker-bounce 0.5s ease-in-out infinite alternate;
+}
+
+/* --- Reading highlight on choice cards (auto-read) --- */
+.lesson-choice-card--reading {
+  border: 4.5px solid #ff9800 !important;
+  animation: lesson-reading-pulse-card 1.0s ease-in-out infinite;
+  z-index: 10;
+}
+
+.lesson-choice-card--reading .lesson-choice-card__label {
+  background: #ffe082 !important;
+  border-top: 2px solid #ff9800;
+}
+
+.lesson-choice-card--reading .lesson-choice-card__label strong {
+  color: #3e2723 !important;
+}
+
+@keyframes lesson-reading-pulse-bubble {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(255, 152, 0, 0.45), 0 12px 32px rgba(10, 32, 18, 0.28);
+  }
+  50% {
+    transform: scale(1.035);
+    box-shadow: 0 0 0 12px rgba(255, 152, 0, 0.25), 0 18px 40px rgba(10, 32, 18, 0.35);
+  }
+}
+
+@keyframes lesson-reading-pulse-card {
+  0%, 100% {
+    transform: translateY(-4px) scale(1.025);
+    box-shadow: 0 10px 0 rgba(140, 100, 0, 0.55), 0 0 0 6px rgba(255, 152, 0, 0.55), 0 12px 32px rgba(0, 0, 0, 0.28) !important;
+  }
+  50% {
+    transform: translateY(-8px) scale(1.055);
+    box-shadow: 0 10px 0 rgba(140, 100, 0, 0.55), 0 0 0 12px rgba(255, 152, 0, 0.35), 0 18px 40px rgba(0, 0, 0, 0.38) !important;
+  }
+}
+
+@keyframes lesson-speaker-bounce {
+  from { transform: scale(1); }
+  to { transform: scale(1.35); }
 }
 
 /* --- Lưới 2 card ảnh --- */
@@ -2343,6 +2450,40 @@
   70% { transform: translateY(-2px) scale(1.03); }
 }
 
+/* Landscape mobile: video stage fills viewport without cropping */
+@media (orientation: landscape) and (max-height: 640px) {
+  .lesson-stage--video,
+  .lesson-stage--mobile-fullscreen,
+  .lesson-feedback-stage {
+    aspect-ratio: unset !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    align-self: stretch !important;
+    overflow: hidden;
+  }
+
+  .lesson-stage--video .lesson-video,
+  .lesson-stage--mobile-fullscreen .lesson-video,
+  .lesson-feedback-stage .lesson-video {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .lesson-stage--video .lesson-video__media,
+  .lesson-stage--mobile-fullscreen .lesson-video__media,
+  .lesson-feedback-stage .lesson-video__media {
+    width: auto !important;
+    height: 100% !important;
+    max-width: 100%;
+    object-fit: contain !important;
+    object-position: center center;
+  }
+}
+
 /* Landscape small screen: giảm font label */
 @media (orientation: landscape) and (max-height: 520px) {
   .lesson-flashcard-stage {
@@ -2367,4 +2508,176 @@
     height: 3rem;
   }
 }
+
+/* --- Red Warning Border Glow around the screen --- */
+.lesson-page {
+  position: relative;
+}
+
+.lesson-page::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  border: 0px solid transparent;
+  box-shadow: inset 0 0 0 0px rgba(239, 68, 68, 0);
+  pointer-events: none;
+  z-index: 9999;
+  transition: border-width 0.3s ease, box-shadow 0.3s ease;
+}
+
+.lesson-page--warning-active::after {
+  border: 8px solid #ef4444 !important;
+  box-shadow: inset 0 0 40px rgba(239, 68, 68, 0.6) !important;
+  animation: lesson-warning-border-pulse 1.2s infinite alternate;
+}
+
+@keyframes lesson-warning-border-pulse {
+  from {
+    box-shadow: inset 0 0 30px rgba(239, 68, 68, 0.4);
+    border-color: #f87171;
+  }
+  to {
+    box-shadow: inset 0 0 60px rgba(239, 68, 68, 0.85);
+    border-color: #dc2626;
+  }
+}
+
+/* --- Wrong Answer Alert Modal Overlay --- */
+.lesson-wrong-alert-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 27, 18, 0.82);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  animation: lesson-fade-in 0.25s ease-out;
+}
+
+.lesson-wrong-alert-card {
+  background: #fffdf5;
+  border: 5px solid #ef4444;
+  border-radius: 2rem;
+  width: min(92%, 30rem);
+  padding: 2rem 1.75rem;
+  text-align: center;
+  box-shadow: 
+    0 20px 48px rgba(0, 0, 0, 0.4), 
+    0 0 0 10px rgba(239, 68, 68, 0.15);
+  animation: lesson-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  outline: none;
+}
+
+.lesson-wrong-alert-card__icon-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+}
+
+.lesson-wrong-alert-card__icon {
+  background: #fee2e2;
+  color: #ef4444;
+  border-radius: 999px;
+  width: 6.5rem;
+  height: 6.5rem;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.25);
+  animation: lesson-icon-shake 1.2s infinite;
+}
+
+.lesson-wrong-alert-card__title {
+  color: #991b1b;
+  font-size: clamp(1.8rem, 4.5vw, 2.4rem);
+  font-weight: 900;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.lesson-wrong-alert-card__feedback {
+  color: #4b3b2f;
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.45;
+  margin: 0 0 2rem 0;
+  overflow-wrap: anywhere;
+}
+
+.lesson-wrong-alert-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.lesson-wrong-alert-card__button {
+  width: 100%;
+  padding: 1rem 1.4rem;
+  border-radius: 1.25rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  border: none;
+}
+
+.lesson-wrong-alert-card__button--retry {
+  background: #10b981;
+  color: white;
+  border: 3px solid #047857;
+  box-shadow: 0 6px 0 #047857;
+}
+
+.lesson-wrong-alert-card__button--retry:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #047857;
+}
+
+.lesson-wrong-alert-card__button--retry:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #047857;
+}
+
+.lesson-wrong-alert-card__button--replay {
+  background: #fff;
+  color: #374151;
+  border: 3px solid #d1d5db;
+  box-shadow: 0 6px 0 #d1d5db;
+}
+
+.lesson-wrong-alert-card__button--replay:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #d1d5db;
+}
+
+.lesson-wrong-alert-card__button--replay:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #d1d5db;
+}
+
+@keyframes lesson-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes lesson-pop-in {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes lesson-icon-shake {
+  0%, 100% { transform: rotate(0) scale(1); }
+  15% { transform: rotate(-8deg) scale(1.08); }
+  30% { transform: rotate(8deg) scale(1.08); }
+  45% { transform: rotate(-8deg) scale(1.08); }
+  60% { transform: rotate(8deg) scale(1.08); }
+  75% { transform: rotate(-3deg) scale(1.03); }
+  85% { transform: rotate(3deg) scale(1.03); }
+}
+
 
